@@ -1,0 +1,15 @@
+docker run --name postgres-db \
+  -e POSTGRES_PASSWORD=mypassword \
+  -e POSTGRES_USER=myuser \
+  -e POSTGRES_DB=mydatabase \
+  -p 5432:5432 \
+  -v postgres-data:/var/lib/postgresql/data \
+  -d postgres
+
+Environment variables:
+POSTGRES_PASSWORD: Sets the password for the PostgreSQL superuser (required).
+POSTGRES_USER: Creates a new superuser with this name (defaults to "postgres" if not specified).
+POSTGRES_DB: Creates a new database with this name (defaults to the username if not specified).
+Port mapping (-p 5432:5432) maps the container's PostgreSQL port (5432) to the same port on your host machine, allowing you to connect to PostgreSQL using localhost:5432.
+Volume mounting (-v postgres-data:/var/lib/postgresql/data) creates a Docker volume named postgres-data that persists the database files outside the container. This ensures your data isn't lost when the container stops or is removed.
+The -d flag makes sure the container runs in detached mode. In plain English, this means the container runs in the background.
