@@ -13,3 +13,11 @@ POSTGRES_DB: Creates a new database with this name (defaults to the username if 
 Port mapping (-p 5432:5432) maps the container's PostgreSQL port (5432) to the same port on your host machine, allowing you to connect to PostgreSQL using localhost:5432.
 Volume mounting (-v postgres-data:/var/lib/postgresql/data) creates a Docker volume named postgres-data that persists the database files outside the container. This ensures your data isn't lost when the container stops or is removed.
 The -d flag makes sure the container runs in detached mode. In plain English, this means the container runs in the background.
+
+docker build -t my-image-name -f /path/to/Dockerfile .
+docker run --name my-container -d my-image-name
+docker run --name redis-con -d redis-img
+
+docker compose up -d
+redis-cli -h localhost -p 6379 ping     
+docker stop redis-container
