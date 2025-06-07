@@ -21,3 +21,24 @@ docker run --name redis-con -d redis-img
 docker compose up -d
 redis-cli -h localhost -p 6379 ping     
 docker stop redis-container
+
+
+dbcache/
+├── api/               # gRPC service definitions
+│   ├── proto/         # .proto files for service definitions
+│   ├── generated/     # Auto-generated gRPC code
+├── cmd/               # Entrypoints for CLI tools or main services
+│   ├── dbcache/       # Main application entrypoint
+├── internal/          # Private packages (business logic)
+│   ├── cache/         # Caching logic (Redis, in-memory)
+│   ├── db/            # Database querying layer (PostgreSQL, MySQL)
+│   ├── grpc/          # gRPC server handlers
+│   ├── config/        # Configuration management
+│   ├── utils/         # Helper functions
+├── pkg/               # Public reusable packages (optional)
+├── test/              # Unit & integration tests
+├── scripts/           # Deployment or helper scripts
+├── deployments/       # Docker, Kubernetes configs
+├── Makefile           # Commands for building & running
+├── go.mod             # Go module definition
+├── README.md          # Documentation
