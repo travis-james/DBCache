@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 	redis "github.com/redis/go-redis/v9"
@@ -16,7 +17,7 @@ func main() {
 
 func checkRedis() {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_ADDR"),
 		Password: "", // No password set
 		DB:       0,  // Use default DB
 	})
@@ -36,13 +37,13 @@ func checkRedis() {
 
 func checkPost() {
 	var (
-		host     = "localhost"
-		port     = 5432
-		user     = "local_dev"
-		password = "local_pw"
-		dbname   = "local_db"
+		host     = os.Getenv("POSTGRES_HOST")
+		port     = os.Getenv("POSTGRES_HOST_PORT")
+		user     = os.Getenv("POSTGRES_USER")
+		password = os.Getenv("POSTGRES_PASSWORD")
+		dbname   = os.Getenv("POSTGRES_DB")
 	)
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
