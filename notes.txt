@@ -25,3 +25,16 @@ docker stop redis-container
 
 docker run --rm -it redis:alpine redis-cli -h 192.168.0.8     # change to your Redis host's IP
 docker cp dbcache_redis:/data/dump.rdb data/dump.rdb
+
+=== Creating postgres data
+docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT, email TEXT, age INT);"
+
+docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "INSERT INTO users (name, email, age) VALUES ('Alice', 'alice@example.com', 30);"
+
+docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "INSERT INTO users (name, email, age) VALUES ('Oomoto', 'nocchi@perfume.com', 36);"
+
+docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "INSERT INTO users (name, email, age) VALUES ('Kashino', 'kashiyuka@europe.gov', 22);"
+
+docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "INSERT INTO users (name, email, age) VALUES ('Nishiwaki', 'aoaoan@neo.net', 49);"
+
+docker exec -t dbcache_postgres pg_dump -U local_dev -d local_db > dump.sql
