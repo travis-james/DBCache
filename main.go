@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -65,4 +66,30 @@ func checkPost() {
 	}
 
 	fmt.Println("Successfully connected!")
+
+	// Query data
+	rows, err := db.Query("SELECT id, name, email, age FROM users")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	// Iterate over rows
+	for rows.Next() {
+		var id int
+		var name, email string
+		var age int
+
+		err := rows.Scan(&id, &name, &email, &age)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("User: ID=%d, Name=%s, Email=%s, Age=%d\n", id, name, email, age)
+	}
+
+	// Check for errors after iteration
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
