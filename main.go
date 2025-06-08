@@ -18,8 +18,9 @@ func main() {
 func checkRedis() {
 	client := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDR"),
-		Password: "", // No password set
-		DB:       0,  // Use default DB
+		Username: os.Getenv("REDIS_USER"),
+		Password: os.Getenv("REDIS_PW"),
+		DB:       0, // Use default DB for now.
 	})
 	ctx := context.Background()
 
@@ -33,6 +34,12 @@ func checkRedis() {
 		panic(err)
 	}
 	fmt.Println("foo", val)
+
+	val, err = client.Get(ctx, "key3").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("key3", val)
 }
 
 func checkPost() {

@@ -1,6 +1,9 @@
 include dbcache.env
 export $(shell env | grep MY_ENV_VAR)
 
+build-redis:
+	docker build -t $(REDIS_IMAGE_NAME) dockerfiles/redis
+
 run-post:
 	docker run -d --name $(POSTGRES_CONTAINER_NAME) \
 	-e POSTGRES_USER=$(POSTGRES_USER) \
@@ -9,7 +12,7 @@ run-post:
 	-p $(POSTGRES_HOST_PORT):$(POSTGRES_CONTAINER_PORT) $(POSTGRES_IMAGE)
 run-redis: 
 	docker run -d --name $(REDIS_CONTAINER_NAME) \
-	-p $(REDIS_HOST_PORT):$(REDIS_CONTAINER_PORT) $(REDIS_IMAGE) 
+	-p $(REDIS_HOST_PORT):$(REDIS_CONTAINER_PORT) $(REDIS_IMAGE_NAME) 
 run-services: run-post run-redis
 
 stop-post: 

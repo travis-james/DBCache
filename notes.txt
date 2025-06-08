@@ -21,3 +21,7 @@ docker run --name redis-con -d redis-img
 docker compose up -d
 redis-cli -h localhost -p 6379 ping     
 docker stop redis-container
+
+
+docker run --rm -it redis:alpine redis-cli -h 192.168.0.8     # change to your Redis host's IP
+docker cp dbcache_redis:/data/dump.rdb data/dump.rdb
