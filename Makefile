@@ -16,6 +16,9 @@ run-redis:
 	docker run -d --name $(REDIS_CONTAINER_NAME) \
 	-p $(REDIS_HOST_PORT):$(REDIS_CONTAINER_PORT) $(REDIS_IMAGE_NAME) 
 run-services: run-post run-redis
+run-dbcache:
+	sleep 5 && env $(shell xargs < dbcache.env) go run main.go
+run: run-services run-dbcache
 
 stop-post: 
 	docker stop $(POSTGRES_CONTAINER_NAME) 
@@ -29,7 +32,3 @@ logs-post:
 	docker logs -f $(POSTGRES_CONTAINER_NAME) 
 logs-redis: 
 	docker logs -f $(REDIS_CONTAINER_NAME) 
-
-run-dbcache:
-	sleep 3 && env $(shell xargs < dbcache.env) go run main.go
-run: run-services run-dbcache
