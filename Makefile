@@ -21,11 +21,9 @@ run-dbcache:
 run: run-services run-dbcache
 
 stop-post: 
-	docker stop $(POSTGRES_CONTAINER_NAME) 
-	docker rm $(POSTGRES_CONTAINER_NAME) 
+	docker rm -f $(POSTGRES_CONTAINER_NAME) 
 stop-redis: 
-	docker stop $(REDIS_CONTAINER_NAME) 
-	docker rm $(REDIS_CONTAINER_NAME)
+	docker rm -f $(REDIS_CONTAINER_NAME)
 stop: stop-post stop-redis 
  
 logs-post: 

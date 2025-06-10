@@ -18,13 +18,20 @@ docker build -t my-image-name -f /path/to/Dockerfile .
 docker run --name my-container -d my-image-name
 docker run --name redis-con -d redis-img
 
-docker compose up -d
-redis-cli -h localhost -p 6379 ping     
-docker stop redis-container
+
+=== Creating redis data
+docker run --name my-redis -d -p 6379:6379 redis:8
+docker run --rm --network container:my-redis redis redis-cli -h localhost SET users:4 '{"id":4, "name":"Nishiwaki", "email":"aoaoan@neo.net", "age":49}'
+docker run --rm --network container:my-redis redis redis-cli -h localhost SET users:1 '{"id":1, "name":"Alice", "email":"alice@example.com", "age":30}'
+
+docker run --rm --network container:dbcache_redis redis redis-cli -h localhost GET users:1
+
+docker exec -it my-redis redis-cli BGSAVE
+docker exec -it my-redis redis-cli CONFIG GET dir
+docker cp my-redis:/data/dump.rdb .
 
 
-docker run --rm -it redis:alpine redis-cli -h 192.168.0.8     # change to your Redis host's IP
-docker cp dbcache_redis:/data/dump.rdb data/dump.rdb
+
 
 === Creating postgres data
 docker run --rm --network container:dbcache_postgres postgres psql -h localhost -U local_dev -d local_db -c "CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT, email TEXT, age INT);"

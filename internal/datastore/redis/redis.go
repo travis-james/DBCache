@@ -28,9 +28,9 @@ func CheckRedis() {
 	}
 	fmt.Println("foo", val)
 
-	val, err = client.Get(ctx, "key3").Result()
+	val, err = client.Get(ctx, "users:1").Result()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("key3", val)
+	fmt.Println("1", val)
 }
