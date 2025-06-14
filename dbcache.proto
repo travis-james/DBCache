@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package dbcache;
+option go_package = "/genproto";
+
+message DBCacheRequest {
+  string query_id = 1;
+}
+
+message DBCacheResponse {
+  string data = 1;
+  bool from_cache = 2; 
+}
+
+service DBCacheService {
+  rpc GetData(DBCacheRequest) returns (DBCacheResponse);
+}

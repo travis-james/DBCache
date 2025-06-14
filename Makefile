@@ -30,3 +30,6 @@ logs-post:
 	docker logs -f $(POSTGRES_CONTAINER_NAME) 
 logs-redis: 
 	docker logs -f $(REDIS_CONTAINER_NAME) 
+
+protobuf:
+	protoc --go_out=. --go-grpc_out=. --proto_path=. dbcache.proto
