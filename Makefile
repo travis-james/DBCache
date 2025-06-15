@@ -32,4 +32,4 @@ logs-redis:
 	docker logs -f $(REDIS_CONTAINER_NAME) 
 
 protobuf:
-	protoc --go_out=. --go-grpc_out=. --proto_path=. dbcache.proto
+	protoc --go_out=. --go-grpc_out=. --proto_path=./api dbcache.proto
