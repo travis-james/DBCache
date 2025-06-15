@@ -117,6 +117,86 @@ func (x *DBCacheResponse) GetFromCache() bool {
 	return false
 }
 
+type HealthCheckRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckRequest) Reset() {
+	*x = HealthCheckRequest{}
+	mi := &file_dbcache_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckRequest) ProtoMessage() {}
+
+func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_dbcache_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
+func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
+	return file_dbcache_proto_rawDescGZIP(), []int{2}
+}
+
+type HealthCheckResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Healthy       bool                   `protobuf:"varint,1,opt,name=healthy,proto3" json:"healthy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckResponse) Reset() {
+	*x = HealthCheckResponse{}
+	mi := &file_dbcache_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckResponse) ProtoMessage() {}
+
+func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_dbcache_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
+func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
+	return file_dbcache_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *HealthCheckResponse) GetHealthy() bool {
+	if x != nil {
+		return x.Healthy
+	}
+	return false
+}
+
 var File_dbcache_proto protoreflect.FileDescriptor
 
 const file_dbcache_proto_rawDesc = "" +
@@ -127,9 +207,13 @@ const file_dbcache_proto_rawDesc = "" +
 	"\x0fDBCacheResponse\x12\x12\n" +
 	"\x04data\x18\x01 \x01(\tR\x04data\x12\x1d\n" +
 	"\n" +
-	"from_cache\x18\x02 \x01(\bR\tfromCache2N\n" +
+	"from_cache\x18\x02 \x01(\bR\tfromCache\"\x14\n" +
+	"\x12HealthCheckRequest\"/\n" +
+	"\x13HealthCheckResponse\x12\x18\n" +
+	"\ahealthy\x18\x01 \x01(\bR\ahealthy2\x98\x01\n" +
 	"\x0eDBCacheService\x12<\n" +
-	"\aGetData\x12\x17.dbcache.DBCacheRequest\x1a\x18.dbcache.DBCacheResponseB\x14Z\x12/internal/genprotob\x06proto3"
+	"\aGetData\x12\x17.dbcache.DBCacheRequest\x1a\x18.dbcache.DBCacheResponse\x12H\n" +
+	"\vCheckHealth\x12\x1b.dbcache.HealthCheckRequest\x1a\x1c.dbcache.HealthCheckResponseB\x14Z\x12/internal/genprotob\x06proto3"
 
 var (
 	file_dbcache_proto_rawDescOnce sync.Once
@@ -143,16 +227,20 @@ func file_dbcache_proto_rawDescGZIP() []byte {
 	return file_dbcache_proto_rawDescData
 }
 
-var file_dbcache_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_dbcache_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_dbcache_proto_goTypes = []any{
-	(*DBCacheRequest)(nil),  // 0: dbcache.DBCacheRequest
-	(*DBCacheResponse)(nil), // 1: dbcache.DBCacheResponse
+	(*DBCacheRequest)(nil),      // 0: dbcache.DBCacheRequest
+	(*DBCacheResponse)(nil),     // 1: dbcache.DBCacheResponse
+	(*HealthCheckRequest)(nil),  // 2: dbcache.HealthCheckRequest
+	(*HealthCheckResponse)(nil), // 3: dbcache.HealthCheckResponse
 }
 var file_dbcache_proto_depIdxs = []int32{
 	0, // 0: dbcache.DBCacheService.GetData:input_type -> dbcache.DBCacheRequest
-	1, // 1: dbcache.DBCacheService.GetData:output_type -> dbcache.DBCacheResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: dbcache.DBCacheService.CheckHealth:input_type -> dbcache.HealthCheckRequest
+	1, // 2: dbcache.DBCacheService.GetData:output_type -> dbcache.DBCacheResponse
+	3, // 3: dbcache.DBCacheService.CheckHealth:output_type -> dbcache.HealthCheckResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -169,7 +257,7 @@ func file_dbcache_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dbcache_proto_rawDesc), len(file_dbcache_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

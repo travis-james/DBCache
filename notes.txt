@@ -59,3 +59,11 @@ Implement the gRPC server by defining the actual logic for GetData().
 Implement the gRPC client to send requests to the server.
 
 Wire up Redis caching and database integration.
+
+
+EXPLAINER:
+Why Do You Extend UnimplementedDBCacheServiceServer?
+Instead of implementing DBCacheServiceServer directly, the recommended practice is to embed UnimplementedDBCacheServiceServer into your own Server struct:
+This ensures that if future versions of the .proto file introduce new RPC methods, your code won't break due to missing implementations—you'll just inherit empty method stubs.
+
+Then, you override only the methods you need,

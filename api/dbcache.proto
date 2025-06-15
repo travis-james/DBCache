@@ -12,6 +12,12 @@ message DBCacheResponse {
   bool from_cache = 2; 
 }
 
+message HealthCheckRequest {}
+message HealthCheckResponse {
+  bool healthy = 1;
+}
+
 service DBCacheService {
   rpc GetData(DBCacheRequest) returns (DBCacheResponse);
+  rpc CheckHealth(HealthCheckRequest) returns (HealthCheckResponse);
 }

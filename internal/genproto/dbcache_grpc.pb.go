@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DBCacheService_GetData_FullMethodName = "/dbcache.DBCacheService/GetData"
+	DBCacheService_GetData_FullMethodName     = "/dbcache.DBCacheService/GetData"
+	DBCacheService_CheckHealth_FullMethodName = "/dbcache.DBCacheService/CheckHealth"
 )
 
 // DBCacheServiceClient is the client API for DBCacheService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DBCacheServiceClient interface {
 	GetData(ctx context.Context, in *DBCacheRequest, opts ...grpc.CallOption) (*DBCacheResponse, error)
+	CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
 type dBCacheServiceClient struct {
@@ -47,11 +49,22 @@ func (c *dBCacheServiceClient) GetData(ctx context.Context, in *DBCacheRequest, 
 	return out, nil
 }
 
+func (c *dBCacheServiceClient) CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, DBCacheService_CheckHealth_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DBCacheServiceServer is the server API for DBCacheService service.
 // All implementations must embed UnimplementedDBCacheServiceServer
 // for forward compatibility.
 type DBCacheServiceServer interface {
 	GetData(context.Context, *DBCacheRequest) (*DBCacheResponse, error)
+	CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedDBCacheServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedDBCacheServiceServer struct{}
 
 func (UnimplementedDBCacheServiceServer) GetData(context.Context, *DBCacheRequest) (*DBCacheResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetData not implemented")
+}
+func (UnimplementedDBCacheServiceServer) CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckHealth not implemented")
 }
 func (UnimplementedDBCacheServiceServer) mustEmbedUnimplementedDBCacheServiceServer() {}
 func (UnimplementedDBCacheServiceServer) testEmbeddedByValue()                        {}
@@ -104,6 +120,24 @@ func _DBCacheService_GetData_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DBCacheService_CheckHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DBCacheServiceServer).CheckHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DBCacheService_CheckHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DBCacheServiceServer).CheckHealth(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DBCacheService_ServiceDesc is the grpc.ServiceDesc for DBCacheService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var DBCacheService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetData",
 			Handler:    _DBCacheService_GetData_Handler,
+		},
+		{
+			MethodName: "CheckHealth",
+			Handler:    _DBCacheService_CheckHealth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
