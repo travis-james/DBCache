@@ -8,28 +8,34 @@ message Empty {}
 
 // Request message for retrieving data.
 message GetRequest {
-  string key = 1; // Key of data to be retrieved from cache.
+  string query_id = 1; // Key of data to be retrieved from cache.
+  string fallback_query = 2; // Raw query string to hit DB if cache miss.
+  bool skip_cache = 3; // Skip cache, go straight to DB.
 }
-
 // Response message for retrieving data.
 message GetResponse {
-  bytes data = 1; // Data from cache/db.
-  int64 ttl_seconds = 2; // Remaining TTL.
+  bool from_cache = 1; // True if from cache.
+  bytes data = 2; // Data from cache/db.
+  int64 ttl_seconds = 3; // Remaining TTL if cached.
 }
 
 message InsertRequest {
-  string key = 1;  // Key of data to be cached.
+  string query_id = 1;  // Key of data to be cached.
   bytes data = 2;  // Data to be cached.
   int64 ttl_seconds = 3; // Time to live in seconds
 }
-
 message InsertResponse {
   bool success = 1; 
   string error = 2; // if there was a failure.``
 }
 
-message HealthCheckResponse {
-  bool healthy = 1;
+message InvalidateRequest {
+  repeated string keys = 1; // One or more cache keys to invalidate
+}
+
+message InvalidateResponse {
+  bool success = 1;
+  int64 entries_removed = 2;
 }
 
 message FlushRequest {
@@ -40,9 +46,14 @@ message FlushResponse {
   int64 number_of_entries_removed = 2;
 }
 
+message HealthCheckResponse {
+  bool healthy = 1;
+}
+
 service DBCacheService {
   rpc GetData(GetRequest) returns (GetResponse);
   rpc InsertData(InsertRequest) returns (InsertResponse);
-  rpc CheckHealth(Empty) returns (HealthCheckResponse);
+  rpc InvalidateCache(InvalidateRequest) returns (InvalidateResponse);
   rpc FlushCache(FlushRequest) returns (FlushResponse);
+  rpc CheckHealth(Empty) returns (HealthCheckResponse);
 }

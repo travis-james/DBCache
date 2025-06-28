@@ -65,6 +65,3 @@ This ensures that if future versions of the .proto file introduce new RPC method
 
 Then, you override only the methods you need,
 
-Lets scrap the sql integration.
-Lets keep this lightweight and delegate the read-through logic to other services to keep this modular/reduce coupling/avoid maintainign db conns in the cache layer.
-lets add a streaming feature eventually to make use of grpc, though.
