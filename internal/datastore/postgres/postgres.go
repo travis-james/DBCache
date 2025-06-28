@@ -20,6 +20,7 @@ func CheckPost() {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
+	log.Printf("Connecting to: host=%s port=%s user=%s dbname=%s", host, port, user, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)

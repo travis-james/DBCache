@@ -50,15 +50,12 @@ docker exec -t dbcache_postgres pg_dump -U local_dev -d local_db > dump.sql
 
 protoc --go_out=. --go-grpc_out=. --proto_path=. dbcache.proto
 
-pb.go has struct definitions for messages and serial/deserialization.
+pb.go contains all the protocol buffer code to populate, serialize, and retrieve request and response message types.
 grpc.pb.go is service interface, defines what I need to implement, and client stubs.
 
 Next Steps
-Implement the gRPC server by defining the actual logic for GetData().
-
-Implement the gRPC client to send requests to the server.
-
-Wire up Redis caching and database integration.
+1. Implementing the service interface generated from our service definition: doing the actual “work” of our service.
+2. Running a gRPC server to listen for requests from clients and dispatch them to the right service implementation.
 
 
 EXPLAINER:
