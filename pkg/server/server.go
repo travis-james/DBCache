@@ -15,8 +15,9 @@ type Server struct {
 	pb.UnimplementedDBCacheServiceServer
 }
 
-func (ss Server) GetHealth(_ context.Context, _ *pb.HealthCheckRequest) *pb.HealthCheckResponse {
-	return &pb.HealthCheckResponse{Healthy: true}
+func (ss Server) CheckHealth(_ context.Context, _ *pb.HealthCheckRequest) (*pb.HealthCheckResponse, error) {
+	log.Print("CheckHealth request received")
+	return &pb.HealthCheckResponse{Healthy: true}, nil
 }
 
 func Start() {
