@@ -3,21 +3,49 @@ syntax = "proto3";
 package dbcache;
 option go_package = "/internal/genproto";
 
-message DBCacheRequest {
-  string query_id = 1;
+// Empty message for when no input parameter is needed.
+message Empty {}
+
+// Request message for retrieving data.
+message GetRequest {
+  string query_id = 1; // Key of data to be retrieved from cache.
+  string fallback_query = 2; // Raw query string to hit DB if cache miss.
+  bool skip_cache = 3; // Skip cache, go straight to DB.
 }
 
-message DBCacheResponse {
-  string data = 1;
-  bool from_cache = 2; 
+// Response message for retrieving data.
+message GetResponse {
+  bool from_cache = 1; // True if from cache.
+  bytes data = 2; // Data from cache/db.
+  int64 ttl_seconds = 3; // Remaining TTL if cached.
 }
 
-message HealthCheckRequest {}
+message InsertRequest {
+  string query_id = 1;  // Key of data to be cached.
+  bytes data = 2;  // Data to be cached.
+  int64 ttl_seconds = 3; // Time to live in seconds
+}
+
+message InsertResponse {
+  bool success = 1; 
+  string error = 2; // if there was a failure.``
+}
+
 message HealthCheckResponse {
   bool healthy = 1;
 }
 
+message FlushRequest {
+  bool confirm = 1; // Opt-in is explicit.
+}
+message FlushResponse {
+  bool success = 1;
+  int64 number_of_entries_removed = 2;
+}
+
 service DBCacheService {
-  rpc GetData(DBCacheRequest) returns (DBCacheResponse);
-  rpc CheckHealth(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc GetData(GetRequest) returns (GetResponse);
+  rpc InsertData(InsertRequest) returns (InsertResponse);
+  rpc CheckHealth(Empty) returns (HealthCheckResponse);
+  rpc FlushCache(FlushRequest) returns (FlushResponse);
 }

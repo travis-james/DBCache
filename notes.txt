@@ -64,3 +64,7 @@ Instead of implementing DBCacheServiceServer directly, the recommended practice 
 This ensures that if future versions of the .proto file introduce new RPC methods, your code won't break due to missing implementations—you'll just inherit empty method stubs.
 
 Then, you override only the methods you need,
+
+PutQueryResult is for manually caching known results, DB hits, or prewarmed data—no DB touch.
+
+GetCachedQuery is the only one (in that model) that can be DB-aware, if you include fallback_query.
