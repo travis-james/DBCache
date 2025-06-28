@@ -65,6 +65,6 @@ This ensures that if future versions of the .proto file introduce new RPC method
 
 Then, you override only the methods you need,
 
-PutQueryResult is for manually caching known results, DB hits, or prewarmed data—no DB touch.
-
-GetCachedQuery is the only one (in that model) that can be DB-aware, if you include fallback_query.
+Lets scrap the sql integration.
+Lets keep this lightweight and delegate the read-through logic to other services to keep this modular/reduce coupling/avoid maintainign db conns in the cache layer.
+lets add a streaming feature eventually to make use of grpc, though.

@@ -8,20 +8,17 @@ message Empty {}
 
 // Request message for retrieving data.
 message GetRequest {
-  string query_id = 1; // Key of data to be retrieved from cache.
-  string fallback_query = 2; // Raw query string to hit DB if cache miss.
-  bool skip_cache = 3; // Skip cache, go straight to DB.
+  string key = 1; // Key of data to be retrieved from cache.
 }
 
 // Response message for retrieving data.
 message GetResponse {
-  bool from_cache = 1; // True if from cache.
-  bytes data = 2; // Data from cache/db.
-  int64 ttl_seconds = 3; // Remaining TTL if cached.
+  bytes data = 1; // Data from cache/db.
+  int64 ttl_seconds = 2; // Remaining TTL.
 }
 
 message InsertRequest {
-  string query_id = 1;  // Key of data to be cached.
+  string key = 1;  // Key of data to be cached.
   bytes data = 2;  // Data to be cached.
   int64 ttl_seconds = 3; // Time to live in seconds
 }
