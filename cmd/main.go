@@ -16,9 +16,18 @@ func main() {
 	case "client":
 		client.Start()
 	default:
-		redis.CheckRedis()
-		postgres.CheckPost()
-
-		server.Start()
+		ss, err := server.Init()
+		if err != nil {
+			panic(err)
+		}
+		defer ss.Close()
+		// Check dbs, for test/local dev.
+		if pg, ok := ss.DB.(*postgres.PostgresAdapter); ok {
+			pg.CheckPost()
+		}
+		if pg, ok := ss.Cache.(*redis.RedisAdapter); ok {
+			pg.CheckRedis()
+		}
+		ss.StartGRPCServer()
 	}
 }

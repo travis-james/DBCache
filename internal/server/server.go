@@ -8,14 +8,41 @@ import (
 
 	"google.golang.org/grpc"
 
+	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
+	"github.com/travis-james/DBCache/internal/datastore/postgres"
+	"github.com/travis-james/DBCache/internal/datastore/redis"
 	pb "github.com/travis-james/DBCache/pkg/proto"
 )
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
-	DB    datastore.DB
-	Cache datastore.Cache
+	DB     datastore.DB
+	Cache  datastore.Cache
+	Config *config.Config
+}
+
+func Init() (Server, error) {
+	config, err := config.Load()
+	if err != nil {
+		return Server{}, err
+	}
+
+	pa, err := postgres.NewPostgres(config)
+	if err != nil {
+		return Server{}, err
+	}
+
+	ra, err := redis.NewRedis(config)
+	if err != nil {
+		return Server{}, err
+	}
+
+	return Server{
+		DB:     &pa,
+		Cache:  &ra,
+		Config: config,
+	}, nil
 }
 
 func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
@@ -23,16 +50,22 @@ func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckRes
 	return &pb.HealthCheckResponse{Healthy: true}, nil
 }
 
-func Start() {
-	port := 50051
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+func (ss Server) StartGRPCServer() {
+	log.Printf("cachepw %s, grpc port %s", ss.Config.CachePw, ss.Config.GRPCPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", ss.Config.GRPCPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterDBCacheServiceServer(grpcServer, &Server{})
+	pb.RegisterDBCacheServiceServer(grpcServer, ss)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func (ss Server) Close() error {
+	ss.Cache.Close()
+	ss.DB.Close()
+	return nil
 }

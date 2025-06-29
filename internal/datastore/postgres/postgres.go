@@ -4,38 +4,48 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/travis-james/DBCache/internal/config"
 )
 
-func CheckPost() {
-	var (
-		host     = os.Getenv("POSTGRES_HOST")
-		port     = os.Getenv("POSTGRES_HOST_PORT")
-		user     = os.Getenv("POSTGRES_USER")
-		password = os.Getenv("POSTGRES_PASSWORD")
-		dbname   = os.Getenv("POSTGRES_DB")
-	)
+type PostgresAdapter struct {
+	DB *sql.DB
+}
+
+func NewPostgres(cc *config.Config) (PostgresAdapter, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	log.Printf("Connecting to: host=%s port=%s user=%s dbname=%s", host, port, user, dbname)
+		cc.DatastoreDBHost, cc.DatastoreDBPort, cc.DatastoreDBUser, cc.DatastoreDBPw, cc.DatastoreDBName)
+	log.Printf("Connecting to: %s", psqlInfo) // TODO: REMOVE THIS EVENTUALLY
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Successfully connected!")
 
-	fmt.Println("Successfully connected!")
+	return PostgresAdapter{
+		DB: db,
+	}, nil
+}
 
+func (pa *PostgresAdapter) Query(query string, args ...any) (*sql.Rows, error) {
+	return pa.DB.Query(query, args...)
+}
+
+func (pa *PostgresAdapter) Close() error {
+	return pa.DB.Close()
+}
+
+// For local dev/testing.
+func (pa *PostgresAdapter) CheckPost() {
 	// Query data
-	rows, err := db.Query("SELECT id, name, email, age FROM users")
+	rows, err := pa.DB.Query("SELECT id, name, email, age FROM users")
 	if err != nil {
 		log.Fatal(err)
 	}

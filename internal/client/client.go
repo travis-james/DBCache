@@ -20,7 +20,7 @@ func Start() {
 	client := pb.NewDBCacheServiceClient(conn)
 
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	defer cancel()
 	r, err := client.CheckHealth(ctx, &pb.Empty{})
 	if err != nil {
