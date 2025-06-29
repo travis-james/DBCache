@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/travis-james/DBCache/internal/genproto"
+	pb "github.com/travis-james/DBCache/pkg/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -22,7 +22,7 @@ func Start() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := client.CheckHealth(ctx, &pb.HealthCheckRequest{})
+	r, err := client.CheckHealth(ctx, &pb.Empty{})
 	if err != nil {
 		log.Fatalf("could not check health: %v", err)
 	}

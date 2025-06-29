@@ -8,14 +8,14 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/travis-james/DBCache/internal/genproto"
+	pb "github.com/travis-james/DBCache/pkg/proto"
 )
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
 }
 
-func (ss Server) CheckHealth(_ context.Context, _ *pb.HealthCheckRequest) (*pb.HealthCheckResponse, error) {
+func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
 	log.Print("CheckHealth request received")
 	return &pb.HealthCheckResponse{Healthy: true}, nil
 }

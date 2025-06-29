@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 
+	"github.com/travis-james/DBCache/internal/client"
 	"github.com/travis-james/DBCache/internal/datastore/redis"
-	"github.com/travis-james/DBCache/pkg/client"
-	"github.com/travis-james/DBCache/pkg/server"
+	"github.com/travis-james/DBCache/internal/server"
 )
 
 func main() {

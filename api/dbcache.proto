@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package dbcache;
-option go_package = "/internal/genproto";
+option go_package = "/pkg/proto";
 
 // Empty message for when no input parameter is needed.
 message Empty {}
@@ -26,7 +26,7 @@ message InsertRequest {
 }
 message InsertResponse {
   bool success = 1; 
-  string error = 2; // if there was a failure.``
+  string error = 2; // if there was a failure.
 }
 
 message InvalidateRequest {
