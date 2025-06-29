@@ -8,11 +8,14 @@ import (
 
 	"google.golang.org/grpc"
 
+	"github.com/travis-james/DBCache/internal/datastore"
 	pb "github.com/travis-james/DBCache/pkg/proto"
 )
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
+	DB    datastore.DB
+	Cache datastore.Cache
 }
 
 func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {

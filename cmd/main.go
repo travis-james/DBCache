@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"github.com/travis-james/DBCache/internal/client"
+	"github.com/travis-james/DBCache/internal/datastore/postgres"
 	"github.com/travis-james/DBCache/internal/datastore/redis"
 	"github.com/travis-james/DBCache/internal/server"
 )
@@ -16,7 +17,7 @@ func main() {
 		client.Start()
 	default:
 		redis.CheckRedis()
-		//postgres.CheckPost()
+		postgres.CheckPost()
 
 		server.Start()
 	}
