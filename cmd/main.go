@@ -22,8 +22,8 @@ func main() {
 		}
 		defer ss.Close()
 		// Check dbs, for test/local dev.
-		if pg, ok := ss.DB.(*postgres.PostgresAdapter); ok {
-			pg.CheckPost()
+		if _, ok := ss.DB.(*postgres.PostgresAdapter); ok {
+			//pg.CheckPost()
 		}
 		if _, ok := ss.Cache.(*redis.RedisAdapter); ok {
 			//pg.CheckRedis()
