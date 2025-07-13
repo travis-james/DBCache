@@ -21,6 +21,10 @@ run-server:
 run-client:
 	go run ./cmd/main.go -mode=client
 
+.PHONY: tests
+tests:
+	go test -tags=integration -v ./tests/...
+
 stop-post: 
 	docker rm -f $(POSTGRES_CONTAINER_NAME) 
 stop-redis: 

@@ -41,32 +41,3 @@ func (pa *PostgresAdapter) Query(query string, args ...any) (*sql.Rows, error) {
 func (pa *PostgresAdapter) Close() error {
 	return pa.DB.Close()
 }
-
-// For local dev/testing.
-func (pa *PostgresAdapter) CheckPost() {
-	// Query data
-	rows, err := pa.DB.Query("SELECT id, name, email, age FROM users")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-
-	// Iterate over rows
-	for rows.Next() {
-		var id int
-		var name, email string
-		var age int
-
-		err := rows.Scan(&id, &name, &email, &age)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("User: ID=%d, Name=%s, Email=%s, Age=%d\n", id, name, email, age)
-	}
-
-	// Check for errors after iteration
-	if err = rows.Err(); err != nil {
-		log.Fatal(err)
-	}
-}

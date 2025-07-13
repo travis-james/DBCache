@@ -5,6 +5,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/travis-james/DBCache/internal/datastore/postgres"
 	"github.com/travis-james/DBCache/internal/datastore/redis"
 	"github.com/travis-james/DBCache/internal/server"
 )
@@ -53,4 +55,48 @@ func TestVerifyLocalRedisWorks(t *testing.T) {
 	gotVal, err := ra.Get(ctx, putKey)
 	require.Nil(t, err)
 	assert.Equal(t, putVal, gotVal)
+}
+
+func TestVerifyLocalPostGresWorks(t *testing.T) {
+	// Verifies that get and set work for /internal/datastore/redis
+	ss, err := server.Init()
+	require.Nil(t, err)
+
+	pg, ok := ss.DB.(*postgres.PostgresAdapter)
+	require.True(t, ok)
+
+	// Query data
+	rows, err := pg.DB.Query("SELECT id, name, email, age FROM users")
+	require.Nil(t, err)
+	defer rows.Close()
+
+	// Iterate over rows
+	var (
+		receivedValues = map[int]string{}
+		expectedValues = map[int]string{
+			1: "Name=Alice, Email=alice@example.com, Age=30",
+			2: "Name=Oomoto, Email=nocchi@perfume.com, Age=36",
+			3: "Name=Kashino, Email=kashiyuka@europe.gov, Age=22",
+			4: "Name=Nishiwaki, Email=aoaoan@neo.net, Age=49",
+		}
+	)
+	for rows.Next() {
+		var id int
+		var name, email string
+		var age int
+
+		err := rows.Scan(&id, &name, &email, &age)
+		require.Nil(t, err)
+
+		receivedValues[id] = fmt.Sprintf("Name=%s, Email=%s, Age=%d", name, email, age)
+
+	}
+	assert.Equal(t, len(expectedValues), len(receivedValues))
+	// Check values....
+	for index := range expectedValues {
+		assert.Equal(t, expectedValues[index], receivedValues[index])
+	}
+	// Check for errors after iteration
+	err = rows.Err()
+	assert.Nil(t, err)
 }
