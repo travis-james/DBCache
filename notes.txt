@@ -65,3 +65,8 @@ This ensures that if future versions of the .proto file introduce new RPC method
 
 Then, you override only the methods you need,
 
+go test -tags=integration -v ./tests/...
+run a file:
+go test -tags=integration -v ./tests/test_cache_test.go
+runa method:
+go test -tags=integration -v ./tests/... -run ^TestMyFunction$

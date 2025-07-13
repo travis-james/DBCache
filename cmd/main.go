@@ -25,8 +25,8 @@ func main() {
 		if pg, ok := ss.DB.(*postgres.PostgresAdapter); ok {
 			pg.CheckPost()
 		}
-		if pg, ok := ss.Cache.(*redis.RedisAdapter); ok {
-			pg.CheckRedis()
+		if _, ok := ss.Cache.(*redis.RedisAdapter); ok {
+			//pg.CheckRedis()
 		}
 		ss.StartGRPCServer()
 	}

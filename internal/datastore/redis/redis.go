@@ -39,24 +39,3 @@ func (ra *RedisAdapter) Set(ctx context.Context, key string, value string, ttl t
 func (ra RedisAdapter) Close() error {
 	return ra.Client.Close()
 }
-
-// For local dev/testing.
-func (ra *RedisAdapter) CheckRedis() {
-	ctx := context.Background()
-
-	if err := ra.Set(ctx, "foo", "bar", 0); err != nil {
-		panic(err)
-	}
-
-	val, err := ra.Get(ctx, "foo")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("foo", val)
-
-	val, err = ra.Get(ctx, "users:1")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("1", val)
-}
