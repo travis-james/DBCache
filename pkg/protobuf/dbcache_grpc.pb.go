@@ -4,7 +4,7 @@
 // - protoc             v3.21.12
 // source: dbcache.proto
 
-package proto
+package protobuf
 
 import (
 	context "context"

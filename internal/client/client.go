@@ -1,7 +1,7 @@
 package client
 
 import (
-	pb "github.com/travis-james/DBCache/pkg/proto"
+	pb "github.com/travis-james/DBCache/pkg/protobuf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

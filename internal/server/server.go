@@ -12,7 +12,7 @@ import (
 	"github.com/travis-james/DBCache/internal/datastore"
 	"github.com/travis-james/DBCache/internal/datastore/postgres"
 	"github.com/travis-james/DBCache/internal/datastore/redis"
-	pb "github.com/travis-james/DBCache/pkg/proto"
+	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
 type Server struct {

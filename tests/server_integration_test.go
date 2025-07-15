@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/travis-james/DBCache/internal/client"
 	"github.com/travis-james/DBCache/internal/server"
-	pb "github.com/travis-james/DBCache/pkg/proto"
+	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
 func TestHealthCheck(t *testing.T) {

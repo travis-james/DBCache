@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	pb "github.com/travis-james/DBCache/pkg/proto"
+	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
 func TestCheckHealth(t *testing.T) {

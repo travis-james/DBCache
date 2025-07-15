@@ -18,4 +18,4 @@ tests:
 	go test -tags=integration -v ./tests/...
 
 protobuf:
-	protoc --go_out=. --go-grpc_out=. --proto_path=./pkg/proto dbcache.proto
+	protoc --go_out=. --go-grpc_out=. --proto_path=./pkg/protobuf dbcache.proto

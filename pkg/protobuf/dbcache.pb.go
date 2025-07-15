@@ -4,7 +4,7 @@
 // 	protoc        v3.21.12
 // source: dbcache.proto
 
-package proto
+package protobuf
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -573,8 +573,7 @@ const file_dbcache_proto_rawDesc = "" +
 	"\x0fInvalidateCache\x12\x1a.dbcache.InvalidateRequest\x1a\x1b.dbcache.InvalidateResponse\x12;\n" +
 	"\n" +
 	"FlushCache\x12\x15.dbcache.FlushRequest\x1a\x16.dbcache.FlushResponse\x12;\n" +
-	"\vCheckHealth\x12\x0e.dbcache.Empty\x1a\x1c.dbcache.HealthCheckResponseB\fZ\n" +
-	"/pkg/protob\x06proto3"
+	"\vCheckHealth\x12\x0e.dbcache.Empty\x1a\x1c.dbcache.HealthCheckResponseB\x0fZ\r/pkg/protobufb\x06proto3"
 
 var (
 	file_dbcache_proto_rawDescOnce sync.Once

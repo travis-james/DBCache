@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package dbcache;
-option go_package = "/pkg/proto";
+option go_package = "/pkg/protobuf";
 
 // Empty message for when no input parameter is needed.
 message Empty {}
