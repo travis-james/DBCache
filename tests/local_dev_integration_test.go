@@ -20,6 +20,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	fmt.Println("🔧 TestMain is running")
 	// Load env vars from file
 	envPath := filepath.Join("..", "dbcache.env")
 	err := godotenv.Load(envPath)

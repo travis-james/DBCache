@@ -17,28 +17,29 @@ import (
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
-	DB     datastore.DB
-	Cache  datastore.Cache
-	Config *config.Config
+	GRPCServer *grpc.Server
+	DB         datastore.DB
+	Cache      datastore.Cache
+	Config     *config.Config
 }
 
-func Init() (Server, error) {
+func Init() (*Server, error) {
 	config, err := config.Load()
 	if err != nil {
-		return Server{}, err
+		return &Server{}, err
 	}
 
 	pa, err := postgres.NewPostgres(config)
 	if err != nil {
-		return Server{}, err
+		return &Server{}, err
 	}
 
 	ra, err := redis.NewRedis(config)
 	if err != nil {
-		return Server{}, err
+		return &Server{}, err
 	}
 
-	return Server{
+	return &Server{
 		DB:     &pa,
 		Cache:  &ra,
 		Config: config,
@@ -50,22 +51,25 @@ func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckRes
 	return &pb.HealthCheckResponse{Healthy: true}, nil
 }
 
-func (ss Server) StartGRPCServer() {
+func (ss *Server) StartGRPCServer() {
 	log.Printf("cachepw %s, grpc port %s", ss.Config.CachePw, ss.Config.GRPCPort)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", ss.Config.GRPCPort))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
-	pb.RegisterDBCacheServiceServer(grpcServer, ss)
+	ss.GRPCServer = grpc.NewServer()
+	pb.RegisterDBCacheServiceServer(ss.GRPCServer, ss)
 	log.Printf("server listening at %v", lis.Addr())
-	if err := grpcServer.Serve(lis); err != nil {
+	if err := ss.GRPCServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
 
-func (ss Server) Close() error {
+func (ss *Server) Close() error {
 	ss.Cache.Close()
 	ss.DB.Close()
+	if ss.GRPCServer != nil {
+		ss.GRPCServer.Stop()
+	}
 	return nil
 }

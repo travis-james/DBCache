@@ -69,4 +69,5 @@ go test -tags=integration -v ./tests/...
 run a file:
 go test -tags=integration -v ./tests/test_cache_test.go
 runa method:
-go test -tags=integration -v ./tests/... -run ^TestMyFunction$
+go test -tags=integration -v ./tests/... -run ^TestHealthCheck$
+kill -9 $(lsof -t -i:50051)
