@@ -7,6 +7,7 @@ import (
 
 	redis "github.com/redis/go-redis/v9"
 	"github.com/travis-james/DBCache/internal/config"
+	"github.com/travis-james/DBCache/internal/datastore"
 )
 
 type RedisAdapter struct {
@@ -28,11 +29,21 @@ func NewRedis(cc *config.Config) (RedisAdapter, error) {
 	return RedisAdapter{Client: client}, nil
 }
 
-func (ra *RedisAdapter) Get(ctx context.Context, key string) (string, error) {
-	return ra.Client.Get(ctx, key).Result()
+func (ra *RedisAdapter) Get(ctx context.Context, key string) ([]byte, int64, error) {
+	data, err := ra.Client.Get(ctx, key).Bytes()
+	if err == redis.Nil {
+		return nil, 0, datastore.ErrCacheMiss
+	} else if err != nil {
+		return nil, 0, err
+	}
+	time, err := ra.Client.TTL(ctx, key).Result()
+	if err != nil {
+		return nil, 0, err
+	}
+	return data, int64(time.Seconds()), nil
 }
 
-func (ra *RedisAdapter) Set(ctx context.Context, key string, value string, ttl time.Duration) error {
+func (ra *RedisAdapter) Set(ctx context.Context, key string, value []byte, ttl time.Duration) error {
 	return ra.Client.Set(ctx, key, value, ttl).Err()
 }
 

@@ -2,11 +2,14 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
@@ -46,11 +49,6 @@ func Init() (*Server, error) {
 	}, nil
 }
 
-func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
-	log.Print("CheckHealth request received")
-	return &pb.HealthCheckResponse{Healthy: true}, nil
-}
-
 func (ss *Server) StartGRPCServer() {
 	log.Printf("cachepw %s, grpc port %s", ss.Config.CachePw, ss.Config.GRPCPort)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", ss.Config.GRPCPort))
@@ -72,4 +70,49 @@ func (ss *Server) Close() error {
 		ss.GRPCServer.Stop()
 	}
 	return nil
+}
+
+// TODO: ping db and cache.
+func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
+	log.Print("CheckHealth request received")
+	return &pb.HealthCheckResponse{Healthy: true}, nil
+}
+
+// GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
+func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
+	data, ttl, err := ss.Cache.Get(ctx, req.QueryId)
+	if err == nil {
+		return &pb.GetResponse{
+			FromCache:  true,
+			Data:       data,
+			TtlSeconds: ttl,
+		}, nil // "redis: nil"
+	} else if !errors.Is(err, datastore.ErrCacheMiss) {
+		return nil, status.Error(codes.Internal, fmt.Sprint("error in querying cache: ", err.Error()))
+	}
+	// Cache miss.
+	args := convertArgs(req.FallbackQuery.Args)
+	dataFromDB, err := ss.DB.QueryRows(req.FallbackQuery.Query, args...)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprint("failed to query rows: ", err.Error()))
+	}
+
+	// Now put that db result in cache.
+	err = ss.Cache.Set(ctx, req.QueryId, dataFromDB, 0)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
+	}
+
+	return &pb.GetResponse{
+		FromCache: false,
+		Data:      dataFromDB,
+	}, err
+}
+
+func convertArgs(args []string) []any {
+	result := make([]any, len(args))
+	for i, arg := range args {
+		result[i] = arg
+	}
+	return result
 }

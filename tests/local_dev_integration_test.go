@@ -40,20 +40,20 @@ func TestVerifyLocalRedisWorks(t *testing.T) {
 
 	ctx := context.Background()
 	// Verify redis instance has seeded data.
-	got, err := ra.Get(ctx, "users:1")
+	got, _, err := ra.Get(ctx, "users:1")
 	require.Nil(t, err)
 	expected := `{"id":1, "name":"Alice", "email":"alice@example.com", "age":30}`
-	assert.Equal(t, expected, got)
+	assert.Equal(t, expected, string(got))
 
 	// Verify can put/get data in redis instance.
 	var (
 		putKey = "foo"
-		putVal = "bar"
+		putVal = []byte("bar")
 	)
 	err = ra.Set(ctx, putKey, putVal, 0)
 	require.Nil(t, err)
 
-	gotVal, err := ra.Get(ctx, putKey)
+	gotVal, _, err := ra.Get(ctx, putKey)
 	require.Nil(t, err)
 	assert.Equal(t, putVal, gotVal)
 }
@@ -95,7 +95,7 @@ func TestVerifyLocalPostGresWorks(t *testing.T) {
 	assert.Equal(t, len(expectedValues), len(receivedValues))
 	// Check values....
 	for index := range expectedValues {
-		assert.Equal(t, expectedValues[index], receivedValues[index])
+		assert.Equal(t, expectedValues[index], string(receivedValues[index]))
 	}
 	// Check for errors after iteration
 	err = rows.Err()

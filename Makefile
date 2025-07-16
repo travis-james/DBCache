@@ -15,6 +15,9 @@ run-client:
 
 .PHONY: tests
 tests:
+	@echo "Starting DB containers..."
+	@$(MAKE) run-dbs
+	@trap '$(MAKE) stop-dbs' EXIT; \
 	go test -tags=integration -v ./tests/...
 
 protobuf:

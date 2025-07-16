@@ -6,10 +6,16 @@ option go_package = "/pkg/protobuf";
 // Empty message for when no input parameter is needed.
 message Empty {}
 
+// Message to define a parameterized sql query.
+message FallbackQuery {
+  string query = 1;
+  repeated string args = 2;
+}
+
 // Request message for retrieving data.
 message GetRequest {
   string query_id = 1; // Key of data to be retrieved from cache.
-  string fallback_query = 2; // Raw query string to hit DB if cache miss.
+  FallbackQuery fallback_query = 2; // query to hit DB if cache miss.
   bool skip_cache = 3; // Skip cache, go straight to DB.
 }
 // Response message for retrieving data.
@@ -51,9 +57,14 @@ message HealthCheckResponse {
 }
 
 service DBCacheService {
+  // GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
   rpc GetData(GetRequest) returns (GetResponse);
+  // InsertData: Manually insert data into cache.
   rpc InsertData(InsertRequest) returns (InsertResponse);
+  // InvalidateCache: remove key(s) from cache.
   rpc InvalidateCache(InvalidateRequest) returns (InvalidateResponse);
+  // FlushCache: remove all entries from cache.
   rpc FlushCache(FlushRequest) returns (FlushResponse);
+  // Server returns healthy, pings status of db and cache.
   rpc CheckHealth(Empty) returns (HealthCheckResponse);
 }

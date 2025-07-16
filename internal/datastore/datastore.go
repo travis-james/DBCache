@@ -2,19 +2,21 @@ package datastore
 
 import (
 	"context"
-	"database/sql"
+	"errors"
 	"time"
 )
 
+var ErrCacheMiss = errors.New("cache miss")
+
 type DB interface {
-	Query(query string, args ...any) (*sql.Rows, error)
+	QueryRows(query string, args ...any) ([]byte, error)
 	// Exec(query string, args ...any) (sql.Result, error)
 	Close() error
 }
 
 type Cache interface {
-	Get(ctx context.Context, key string) (string, error)
-	Set(ctx context.Context, key string, value string, ttl time.Duration) error
+	Get(ctx context.Context, key string) ([]byte, int64, error)
+	Set(ctx context.Context, key string, value []byte, ttl time.Duration) error
 	// Del(ctx context.Context, key string) error
 	Close() error
 }
