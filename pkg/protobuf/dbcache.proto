@@ -53,6 +53,8 @@ message FlushResponse {
 
 message HealthCheckResponse {
   bool healthy = 1;
+  string cache_error = 2;
+  string db_error = 3;
 }
 
 service DBCacheService {

@@ -532,6 +532,8 @@ func (x *FlushResponse) GetNumberOfEntriesRemoved() int64 {
 type HealthCheckResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Healthy       bool                   `protobuf:"varint,1,opt,name=healthy,proto3" json:"healthy,omitempty"`
+	CacheError    string                 `protobuf:"bytes,2,opt,name=cache_error,json=cacheError,proto3" json:"cache_error,omitempty"`
+	DbError       string                 `protobuf:"bytes,3,opt,name=db_error,json=dbError,proto3" json:"db_error,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -573,6 +575,20 @@ func (x *HealthCheckResponse) GetHealthy() bool {
 	return false
 }
 
+func (x *HealthCheckResponse) GetCacheError() string {
+	if x != nil {
+		return x.CacheError
+	}
+	return ""
+}
+
+func (x *HealthCheckResponse) GetDbError() string {
+	if x != nil {
+		return x.DbError
+	}
+	return ""
+}
+
 var File_dbcache_proto protoreflect.FileDescriptor
 
 const file_dbcache_proto_rawDesc = "" +
@@ -610,9 +626,12 @@ const file_dbcache_proto_rawDesc = "" +
 	"\aconfirm\x18\x01 \x01(\bR\aconfirm\"d\n" +
 	"\rFlushResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x129\n" +
-	"\x19number_of_entries_removed\x18\x02 \x01(\x03R\x16numberOfEntriesRemoved\"/\n" +
+	"\x19number_of_entries_removed\x18\x02 \x01(\x03R\x16numberOfEntriesRemoved\"k\n" +
 	"\x13HealthCheckResponse\x12\x18\n" +
-	"\ahealthy\x18\x01 \x01(\bR\ahealthy2\xcb\x02\n" +
+	"\ahealthy\x18\x01 \x01(\bR\ahealthy\x12\x1f\n" +
+	"\vcache_error\x18\x02 \x01(\tR\n" +
+	"cacheError\x12\x19\n" +
+	"\bdb_error\x18\x03 \x01(\tR\adbError2\xcb\x02\n" +
 	"\x0eDBCacheService\x124\n" +
 	"\aGetData\x12\x13.dbcache.GetRequest\x1a\x14.dbcache.GetResponse\x12=\n" +
 	"\n" +

@@ -29,6 +29,10 @@ func NewRedis(cc *config.Config) (RedisAdapter, error) {
 	return RedisAdapter{Client: client}, nil
 }
 
+func (ra RedisAdapter) Ping(ctx context.Context) (string, error) {
+	return ra.Client.Ping(ctx).Result()
+}
+
 func (ra *RedisAdapter) Get(ctx context.Context, key string) ([]byte, int64, error) {
 	data, err := ra.Client.Get(ctx, key).Bytes()
 	if err == redis.Nil {

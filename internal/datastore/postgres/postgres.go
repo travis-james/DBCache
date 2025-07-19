@@ -35,6 +35,10 @@ func NewPostgres(cc *config.Config) (PostgresAdapter, error) {
 	}, nil
 }
 
+func (pa PostgresAdapter) Ping() error {
+	return pa.DB.Ping()
+}
+
 // QueryRows is set up to take whatever query, and assuming success, return the result as a []byte.
 func (pa *PostgresAdapter) QueryRows(query string, args ...any) ([]byte, error) {
 	// Use sql.Rows to get column names

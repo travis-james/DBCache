@@ -73,9 +73,34 @@ func (ss *Server) Close() error {
 }
 
 // TODO: ping db and cache.
-func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
-	log.Print("CheckHealth request received")
-	return &pb.HealthCheckResponse{Healthy: true}, nil
+func (ss Server) CheckHealth(ctx context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
+	log.Print("Ping'ing cache...")
+	cacheResult, cacheErr := ss.Cache.Ping(ctx)
+	if cacheErr != nil {
+		return &pb.HealthCheckResponse{
+			Healthy:    false,
+			CacheError: cacheErr.Error(),
+		}, errors.New("failed to verify health of datastores")
+	}
+	if cacheResult != "PONG" {
+		return &pb.HealthCheckResponse{
+			Healthy:    false,
+			CacheError: fmt.Sprintf("expected PONG, received %s", cacheResult),
+		}, errors.New("failed to verify health of datastores")
+	}
+
+	log.Print("Ping'ing db...")
+	dbErr := ss.DB.Ping()
+	if dbErr != nil {
+		return &pb.HealthCheckResponse{
+			Healthy: false,
+			DbError: dbErr.Error(),
+		}, errors.New("failed to verify health of datastores")
+	}
+
+	return &pb.HealthCheckResponse{
+		Healthy: true,
+	}, nil
 }
 
 // GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
