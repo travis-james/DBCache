@@ -32,7 +32,6 @@ message InsertRequest {
 }
 message InsertResponse {
   bool success = 1; 
-  string error = 2; // if there was a failure.
 }
 
 message InvalidateRequest {

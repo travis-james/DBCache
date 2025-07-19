@@ -80,25 +80,25 @@ func (ss Server) CheckHealth(_ context.Context, _ *pb.Empty) (*pb.HealthCheckRes
 
 // GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
 func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
-	data, ttl, err := ss.Cache.Get(ctx, req.QueryId)
+	data, ttl, err := ss.Cache.Get(ctx, req.GetQueryId())
 	if err == nil {
 		return &pb.GetResponse{
 			FromCache:  true,
 			Data:       data,
 			TtlSeconds: ttl,
-		}, nil // "redis: nil"
+		}, nil
 	} else if !errors.Is(err, datastore.ErrCacheMiss) {
 		return nil, status.Error(codes.Internal, fmt.Sprint("error in querying cache: ", err.Error()))
 	}
 	// Cache miss.
-	args := convertArgs(req.FallbackQuery.Args)
-	dataFromDB, err := ss.DB.QueryRows(req.FallbackQuery.Query, args...)
+	args := convertArgs(req.GetFallbackQuery().GetArgs())
+	dataFromDB, err := ss.DB.QueryRows(req.GetFallbackQuery().GetQuery(), args...)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint("failed to query rows: ", err.Error()))
 	}
 
 	// Now put that db result in cache.
-	err = ss.Cache.Set(ctx, req.QueryId, dataFromDB, 0)
+	err = ss.Cache.Set(ctx, req.GetQueryId(), dataFromDB, 0)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
 	}
@@ -107,6 +107,14 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 		FromCache: false,
 		Data:      dataFromDB,
 	}, err
+}
+
+func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.InsertResponse, error) {
+	err := ss.Cache.Set(ctx, req.GetQueryId(), req.GetData(), 0)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
+	}
+	return nil, nil
 }
 
 func convertArgs(args []string) []any {

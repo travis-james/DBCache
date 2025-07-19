@@ -296,7 +296,6 @@ func (x *InsertRequest) GetTtlSeconds() int64 {
 type InsertResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"` // if there was a failure.
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -336,13 +335,6 @@ func (x *InsertResponse) GetSuccess() bool {
 		return x.Success
 	}
 	return false
-}
-
-func (x *InsertResponse) GetError() string {
-	if x != nil {
-		return x.Error
-	}
-	return ""
 }
 
 type InvalidateRequest struct {
@@ -606,10 +598,9 @@ const file_dbcache_proto_rawDesc = "" +
 	"\bquery_id\x18\x01 \x01(\tR\aqueryId\x12\x12\n" +
 	"\x04data\x18\x02 \x01(\fR\x04data\x12\x1f\n" +
 	"\vttl_seconds\x18\x03 \x01(\x03R\n" +
-	"ttlSeconds\"@\n" +
+	"ttlSeconds\"*\n" +
 	"\x0eInsertResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"'\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"'\n" +
 	"\x11InvalidateRequest\x12\x12\n" +
 	"\x04keys\x18\x01 \x03(\tR\x04keys\"W\n" +
 	"\x12InvalidateResponse\x12\x18\n" +
