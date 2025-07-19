@@ -97,7 +97,7 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 		return nil, status.Error(codes.Internal, fmt.Sprint("failed to query rows: ", err.Error()))
 	}
 
-	// Now put that db result in cache.
+	// Now put that db result in cache. Hmm, bit of code duplication here and InsertData.
 	err = ss.Cache.Set(ctx, req.GetQueryId(), dataFromDB, 0)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
@@ -112,9 +112,9 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.InsertResponse, error) {
 	err := ss.Cache.Set(ctx, req.GetQueryId(), req.GetData(), 0)
 	if err != nil {
-		return nil, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
+		return &pb.InsertResponse{Success: false}, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
 	}
-	return nil, nil
+	return &pb.InsertResponse{Success: true}, nil
 }
 
 func convertArgs(args []string) []any {
