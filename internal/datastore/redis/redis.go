@@ -51,6 +51,10 @@ func (ra *RedisAdapter) Set(ctx context.Context, key string, value []byte, ttl t
 	return ra.Client.Set(ctx, key, value, ttl).Err()
 }
 
+func (ra *RedisAdapter) Delete(ctx context.Context, keys []string) (int64, error) {
+	return ra.Client.Del(ctx, keys...).Result()
+}
+
 func (ra RedisAdapter) Close() error {
 	return ra.Client.Close()
 }

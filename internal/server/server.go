@@ -18,6 +18,8 @@ import (
 	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
+var ERR_FAILED_TO_VALIDATE_DATASTORES = "failed to verify health of datastores"
+
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
 	GRPCServer *grpc.Server
@@ -72,7 +74,6 @@ func (ss *Server) Close() error {
 	return nil
 }
 
-// TODO: ping db and cache.
 func (ss Server) CheckHealth(ctx context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
 	log.Print("Ping'ing cache...")
 	cacheResult, cacheErr := ss.Cache.Ping(ctx)
@@ -80,13 +81,13 @@ func (ss Server) CheckHealth(ctx context.Context, _ *pb.Empty) (*pb.HealthCheckR
 		return &pb.HealthCheckResponse{
 			Healthy:    false,
 			CacheError: cacheErr.Error(),
-		}, errors.New("failed to verify health of datastores")
+		}, errors.New(ERR_FAILED_TO_VALIDATE_DATASTORES)
 	}
 	if cacheResult != "PONG" {
 		return &pb.HealthCheckResponse{
 			Healthy:    false,
 			CacheError: fmt.Sprintf("expected PONG, received %s", cacheResult),
-		}, errors.New("failed to verify health of datastores")
+		}, errors.New(ERR_FAILED_TO_VALIDATE_DATASTORES)
 	}
 
 	log.Print("Ping'ing db...")
@@ -95,7 +96,7 @@ func (ss Server) CheckHealth(ctx context.Context, _ *pb.Empty) (*pb.HealthCheckR
 		return &pb.HealthCheckResponse{
 			Healthy: false,
 			DbError: dbErr.Error(),
-		}, errors.New("failed to verify health of datastores")
+		}, errors.New(ERR_FAILED_TO_VALIDATE_DATASTORES)
 	}
 
 	return &pb.HealthCheckResponse{
@@ -140,6 +141,17 @@ func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.Ins
 		return &pb.InsertResponse{Success: false}, status.Error(codes.Internal, fmt.Sprint("failed to insert into cache: ", err.Error()))
 	}
 	return &pb.InsertResponse{Success: true}, nil
+}
+
+func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest) (*pb.InvalidateResponse, error) {
+	numberOfKeys, err := ss.Cache.Delete(ctx, req.Keys)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.InvalidateResponse{
+		Success:        true,
+		EntriesRemoved: numberOfKeys,
+	}, nil
 }
 
 func convertArgs(args []string) []any {

@@ -19,6 +19,6 @@ type Cache interface {
 	Ping(ctx context.Context) (string, error)
 	Get(ctx context.Context, key string) ([]byte, int64, error)
 	Set(ctx context.Context, key string, value []byte, ttl time.Duration) error
-	// Del(ctx context.Context, key string) error
+	Delete(ctx context.Context, keys []string) (int64, error)
 	Close() error
 }
