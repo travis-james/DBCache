@@ -135,6 +135,14 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	}, err
 }
 
+func convertArgs(args []string) []any {
+	result := make([]any, len(args))
+	for i, arg := range args {
+		result[i] = arg
+	}
+	return result
+}
+
 func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.InsertResponse, error) {
 	err := ss.Cache.Set(ctx, req.GetQueryId(), req.GetData(), 0)
 	if err != nil {
@@ -151,12 +159,4 @@ func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest)
 	return &pb.InvalidateResponse{
 		EntriesRemoved: numberOfKeys,
 	}, nil
-}
-
-func convertArgs(args []string) []any {
-	result := make([]any, len(args))
-	for i, arg := range args {
-		result[i] = arg
-	}
-	return result
 }

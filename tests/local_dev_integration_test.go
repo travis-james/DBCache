@@ -47,8 +47,8 @@ func TestVerifyLocalRedisWorks(t *testing.T) {
 
 	// Verify can put/get data in redis instance.
 	var (
-		putKey = "foo"
-		putVal = []byte("bar")
+		putKey = "users:999"
+		putVal = []byte(`{"id":999, "name":"Isechi", "email":"isechi@sony.co.jp", "age":52}`)
 	)
 	err = ra.Set(ctx, putKey, putVal, 0)
 	require.Nil(t, err)
