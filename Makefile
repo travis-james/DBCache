@@ -17,6 +17,7 @@ run-client:
 tests:
 	@echo "Starting DB containers..."
 	@$(MAKE) run-dbs
+	@sleep 3 # Wait for dbs to finish.
 	@trap '$(MAKE) stop-dbs' EXIT; \
 	go test -tags=integration -v ./tests/...
 

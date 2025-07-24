@@ -155,3 +155,52 @@ func TestInsertData(t *testing.T) {
 		})
 	}
 }
+
+func TestInvalidateCache(t *testing.T) {
+	// server setup
+	ss, err := server.Init()
+	require.Nil(t, err)
+	go ss.StartGRPCServer()
+	defer ss.Close()
+
+	// client setup
+	cc, err := client.Start()
+	require.Nil(t, err)
+	defer cc.Close()
+
+	// What we're testing.
+	tests := []struct {
+		testName        string
+		req             *pb.InvalidateRequest
+		expectedRemoved int64
+	}{
+		{
+			testName: "invalidate a users from the cache",
+			req: &pb.InvalidateRequest{
+				Keys: []string{
+					"users:1",
+					"users:45", // doesn't exist
+				},
+			},
+			expectedRemoved: 1,
+		},
+		{
+			testName: "verify previous user was invalidated from cache",
+			req: &pb.InvalidateRequest{
+				Keys: []string{
+					"users:1",
+				},
+			},
+			expectedRemoved: 0,
+		},
+	}
+	// Run tests.
+	for _, test := range tests {
+		t.Run(test.testName, func(t *testing.T) {
+			resp, err := cc.InvalidateCache(context.Background(), test.req)
+			require.Nil(t, err)
+			require.NotNil(t, resp)
+			require.Equal(t, test.expectedRemoved, resp.GetEntriesRemoved())
+		})
+	}
+}

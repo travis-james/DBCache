@@ -149,7 +149,6 @@ func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest)
 		return nil, err
 	}
 	return &pb.InvalidateResponse{
-		Success:        true,
 		EntriesRemoved: numberOfKeys,
 	}, nil
 }

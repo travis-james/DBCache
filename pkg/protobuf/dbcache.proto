@@ -39,8 +39,7 @@ message InvalidateRequest {
 }
 
 message InvalidateResponse {
-  bool success = 1;
-  int64 entries_removed = 2;
+  int64 entries_removed = 1;
 }
 
 message FlushRequest {
