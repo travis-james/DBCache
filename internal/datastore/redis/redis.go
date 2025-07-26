@@ -55,6 +55,17 @@ func (ra *RedisAdapter) Delete(ctx context.Context, keys []string) (int64, error
 	return ra.Client.Del(ctx, keys...).Result()
 }
 
+func (ra *RedisAdapter) Flush(ctx context.Context) int64 {
+	numberOfKeys := ra.Client.DBSize(ctx).Val()
+	ra.Client.FlushDB(ctx)
+	after := ra.Client.DBSize(ctx).Val() // I assume this returns the size of the currently selected db, and not the all different tables.
+	if after != 0 {
+		// something went wrong...?
+		return 0
+	}
+	return numberOfKeys
+}
+
 func (ra RedisAdapter) Close() error {
 	return ra.Client.Close()
 }

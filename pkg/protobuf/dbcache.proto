@@ -46,8 +46,7 @@ message FlushRequest {
   bool confirm = 1; // Opt-in is explicit.
 }
 message FlushResponse {
-  bool success = 1;
-  int64 number_of_entries_removed = 2;
+  int64 number_of_entries_removed = 1;
 }
 
 message HealthCheckResponse {

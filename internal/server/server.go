@@ -19,6 +19,7 @@ import (
 )
 
 var ERR_FAILED_TO_VALIDATE_DATASTORES = "failed to verify health of datastores"
+var ERR_CONFIRM_FLUSH = `"confirm" needs to be set to true to flush cache`
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
@@ -159,4 +160,12 @@ func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest)
 	return &pb.InvalidateResponse{
 		EntriesRemoved: numberOfKeys,
 	}, nil
+}
+
+func (ss Server) FlushCache(ctx context.Context, req *pb.FlushRequest) (*pb.FlushResponse, error) {
+	if !req.GetConfirm() {
+		return nil, errors.New(ERR_CONFIRM_FLUSH)
+	}
+	var entriesRemoved int64 = ss.Cache.Flush(ctx)
+	return &pb.FlushResponse{NumberOfEntriesRemoved: entriesRemoved}, nil
 }

@@ -6,6 +6,7 @@ package tests
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -201,6 +202,50 @@ func TestInvalidateCache(t *testing.T) {
 			require.Nil(t, err)
 			require.NotNil(t, resp)
 			require.Equal(t, test.expectedRemoved, resp.GetEntriesRemoved())
+		})
+	}
+}
+
+func TestFlushCache(t *testing.T) {
+	// server setup
+	ss, err := server.Init()
+	require.Nil(t, err)
+	go ss.StartGRPCServer()
+	defer ss.Close()
+
+	// client setup
+	cc, err := client.Start()
+	require.Nil(t, err)
+	defer cc.Close()
+
+	// What we're testing.
+	tests := []struct {
+		testName    string
+		req         *pb.FlushRequest
+		expectedErr string
+	}{
+		{
+			testName:    "confirm is false",
+			req:         &pb.FlushRequest{},
+			expectedErr: server.ERR_CONFIRM_FLUSH,
+		},
+		{
+			testName: "happy path",
+			req:      &pb.FlushRequest{Confirm: true},
+		},
+	}
+	// Run tests.
+	for _, test := range tests {
+		t.Run(test.testName, func(t *testing.T) {
+			got, err := cc.FlushCache(context.Background(), test.req)
+			if test.expectedErr != "" {
+				require.NotNil(t, err)
+				require.True(t, strings.Contains(err.Error(), test.expectedErr))
+			} else {
+				require.Nil(t, err)
+				require.NotNil(t, got)
+				require.Greater(t, got.GetNumberOfEntriesRemoved(), int64(0))
+			}
 		})
 	}
 }

@@ -21,4 +21,5 @@ type Cache interface {
 	Set(ctx context.Context, key string, value []byte, ttl time.Duration) error
 	Delete(ctx context.Context, keys []string) (int64, error)
 	Close() error
+	Flush(ctx context.Context) int64
 }
