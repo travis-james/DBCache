@@ -4,8 +4,6 @@ import (
 	"flag"
 
 	"github.com/travis-james/DBCache/internal/client"
-	"github.com/travis-james/DBCache/internal/datastore/postgres"
-	"github.com/travis-james/DBCache/internal/datastore/redis"
 	"github.com/travis-james/DBCache/internal/server"
 )
 
@@ -19,14 +17,6 @@ func main() {
 		ss, err := server.Init()
 		if err != nil {
 			panic(err)
-		}
-		defer ss.Close()
-		// Check dbs, for test/local dev.
-		if _, ok := ss.DB.(*postgres.PostgresAdapter); ok {
-			//pg.CheckPost()
-		}
-		if _, ok := ss.Cache.(*redis.RedisAdapter); ok {
-			//pg.CheckRedis()
 		}
 		ss.StartGRPCServer()
 	}
