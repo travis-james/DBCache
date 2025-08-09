@@ -28,3 +28,9 @@ go test -tags=integration -v ./tests/test_cache_test.go
 runa method:
 go test -tags=integration -v ./tests/... -run ^TestHealthCheck$
 kill -9 $(lsof -t -i:50051)
+
+I could track w/ Prometheus:
+- cache hits/misses/totals
+- memory being used by the cache, so redis.
+- total items in cache
+read the Prometheus docs.
