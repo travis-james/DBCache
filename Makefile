@@ -12,6 +12,8 @@ run-server:
 	env $(shell xargs < dbcache.env) go run ./cmd/main.go -mode=server
 run-client:
 	go run ./cmd/main.go -mode=client
+run-dev:
+	env $(shell xargs < dbcache.env) go run ./cmd/main.go -mode=dev
 
 .PHONY: tests
 tests:

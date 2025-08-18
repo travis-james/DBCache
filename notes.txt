@@ -34,3 +34,6 @@ I could track w/ Prometheus:
 - memory being used by the cache, so redis.
 - total items in cache
 read the Prometheus docs.
+
+
+curl http://localhost:8080/health
