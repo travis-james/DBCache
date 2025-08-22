@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
-	"net/http"
 
 	"github.com/travis-james/DBCache/internal/client"
 	"github.com/travis-james/DBCache/internal/gateway"
@@ -18,7 +16,7 @@ func main() {
 		client.Start()
 	case "dev":
 		go runGRPCServer()
-		go runHTTPServer()
+		go runHTTPGateway()
 		select {}
 	default:
 		runGRPCServer()
@@ -33,17 +31,10 @@ func runGRPCServer() {
 	ss.StartGRPCServer()
 }
 
-func runHTTPServer() {
+func runHTTPGateway() {
 	gw, err := gateway.NewHTTPGateway()
 	if err != nil {
 		panic(err)
 	}
-	httpServer := http.Server{
-		Addr:    ":8080",
-		Handler: gw,
-	}
-	log.Printf("HTTP server listening at %v", httpServer.Addr)
-	if err = httpServer.ListenAndServe(); err != nil {
-		panic(err)
-	}
+	gw.StartHTTPServer()
 }
