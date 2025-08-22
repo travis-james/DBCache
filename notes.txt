@@ -37,3 +37,4 @@ read the Prometheus docs.
 
 
 curl http://localhost:8080/health
+curl http://localhost:8080/data/users:1
