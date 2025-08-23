@@ -9,6 +9,7 @@ import (
 	grpcInternal "github.com/travis-james/DBCache/internal/client"
 	pb "github.com/travis-james/DBCache/pkg/protobuf"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func NewRouter(grpcClient *grpcInternal.Client) *gin.Engine {
@@ -22,7 +23,7 @@ func NewRouter(grpcClient *grpcInternal.Client) *gin.Engine {
 
 func checkHealth(grpcClient *grpcInternal.Client) gin.HandlerFunc {
 	return func(gctx *gin.Context) {
-		resp, err := grpcClient.CheckHealth(context.Background(), &pb.Empty{})
+		resp, err := grpcClient.CheckHealth(context.Background(), &emptypb.Empty{})
 		if err != nil {
 			gctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -38,7 +39,8 @@ func checkHealth(grpcClient *grpcInternal.Client) gin.HandlerFunc {
 
 func getData(grpcClient *grpcInternal.Client) gin.HandlerFunc {
 	return func(gctx *gin.Context) {
-		resp, err := grpcClient.GetData(context.Background(), &pb.GetRequest{QueryId: gctx.Param("id")})
+		resp, err := grpcClient.GetData(
+			context.Background(), &pb.GetRequest{QueryId: gctx.Param("id")})
 		if err != nil {
 			gctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

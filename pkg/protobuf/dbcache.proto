@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package dbcache;
 option go_package = "/pkg/protobuf";
-
-// Empty message for when no input parameter is needed.
-message Empty {}
+import "google/protobuf/empty.proto";
 
 // Message to define a parameterized sql query.
 message FallbackQuery {
@@ -65,5 +63,5 @@ service DBCacheService {
   // FlushCache: remove all entries from cache.
   rpc FlushCache(FlushRequest) returns (FlushResponse);
   // Server returns healthy, pings status of db and cache.
-  rpc CheckHealth(Empty) returns (HealthCheckResponse);
+  rpc CheckHealth(google.protobuf.Empty) returns (HealthCheckResponse);
 }

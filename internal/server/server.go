@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
@@ -75,7 +76,7 @@ func (ss *Server) Close() error {
 	return nil
 }
 
-func (ss Server) CheckHealth(ctx context.Context, _ *pb.Empty) (*pb.HealthCheckResponse, error) {
+func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthCheckResponse, error) {
 	log.Print("Ping'ing cache...")
 	cacheResult, cacheErr := ss.Cache.Ping(ctx)
 	if cacheErr != nil {

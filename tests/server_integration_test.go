@@ -14,6 +14,7 @@ import (
 	"github.com/travis-james/DBCache/internal/client"
 	"github.com/travis-james/DBCache/internal/server"
 	pb "github.com/travis-james/DBCache/pkg/protobuf"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestHealthCheck(t *testing.T) {
@@ -30,7 +31,7 @@ func TestHealthCheck(t *testing.T) {
 	defer cc.Close()
 
 	// What we're testing.
-	r, err := cc.CheckHealth(context.Background(), &pb.Empty{})
+	r, err := cc.CheckHealth(context.Background(), &emptypb.Empty{})
 	require.Nil(t, err)
 	assert.True(t, r.GetHealthy())
 }

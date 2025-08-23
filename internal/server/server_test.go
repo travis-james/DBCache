@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	pb "github.com/travis-james/DBCache/pkg/protobuf"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestCheckHealth(t *testing.T) {
 	testServer := Server{}
-	got, err := testServer.CheckHealth(context.Background(), &pb.Empty{})
+	got, err := testServer.CheckHealth(context.Background(), &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
