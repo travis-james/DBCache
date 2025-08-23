@@ -32,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DBCacheServiceClient interface {
 	// GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
+	// Need to use post so we can send the fallback query as a json body.
 	GetData(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	// InsertData: Manually insert data into cache.
 	InsertData(ctx context.Context, in *InsertRequest, opts ...grpc.CallOption) (*InsertResponse, error)
@@ -106,6 +107,7 @@ func (c *dBCacheServiceClient) CheckHealth(ctx context.Context, in *emptypb.Empt
 // for forward compatibility.
 type DBCacheServiceServer interface {
 	// GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
+	// Need to use post so we can send the fallback query as a json body.
 	GetData(context.Context, *GetRequest) (*GetResponse, error)
 	// InsertData: Manually insert data into cache.
 	InsertData(context.Context, *InsertRequest) (*InsertResponse, error)

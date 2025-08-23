@@ -69,7 +69,7 @@ func TestGetData(t *testing.T) {
 		{
 			testName: "cache miss",
 			req: &pb.GetRequest{
-				QueryId: "users:2",
+				QueryId: "users:3",
 				FallbackQuery: &pb.FallbackQuery{
 					Query: "SELECT name, email, age FROM users WHERE id = $1",
 					Args:  []string{"3"},
@@ -85,7 +85,7 @@ func TestGetData(t *testing.T) {
 		{
 			testName: "cache hit on what was previously a miss",
 			req: &pb.GetRequest{
-				QueryId: "users:2",
+				QueryId: "users:3",
 			},
 			fromCache: true,
 			expected: map[string]any{

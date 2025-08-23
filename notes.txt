@@ -36,5 +36,28 @@ I could track w/ Prometheus:
 read the Prometheus docs.
 
 
-curl http://localhost:8080/health
+curl http://localhost:8080/v1/health
 curl http://localhost:8080/data/users:1
+curl -X POST http://localhost:8080/v1/data \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query_id": "users:1",
+    "skip_cache": false
+  }'
+
+curl -X POST http://localhost:8080/v1/data \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query_id": "users:2",
+    "fallback_query": {
+      "query": "SELECT name, email, age FROM users WHERE id = $1",
+      "args": ["3"]
+    },
+    "skip_cache": false
+  }'
+
+
+
+need this plugin
+go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+

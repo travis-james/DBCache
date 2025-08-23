@@ -24,4 +24,10 @@ tests:
 	go test -tags=integration -v ./tests/...
 
 protobuf:
-	protoc --go_out=. --go-grpc_out=. --proto_path=./pkg/protobuf dbcache.proto
+	protoc \
+	--go_out=./pkg/protobuf --go_opt=paths=source_relative \
+	--go-grpc_out=./pkg/protobuf --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=./pkg/protobuf --grpc-gateway_opt=paths=source_relative \
+	--proto_path=./pkg/protobuf \
+	--proto_path=./proto_deps \
+	dbcache.proto

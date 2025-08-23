@@ -7,6 +7,7 @@
 package protobuf
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -541,7 +542,7 @@ var File_dbcache_proto protoreflect.FileDescriptor
 
 const file_dbcache_proto_rawDesc = "" +
 	"\n" +
-	"\rdbcache.proto\x12\adbcache\x1a\x1bgoogle/protobuf/empty.proto\"9\n" +
+	"\rdbcache.proto\x12\adbcache\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"9\n" +
 	"\rFallbackQuery\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12\x12\n" +
 	"\x04args\x18\x02 \x03(\tR\x04args\"\x85\x01\n" +
@@ -576,15 +577,16 @@ const file_dbcache_proto_rawDesc = "" +
 	"\ahealthy\x18\x01 \x01(\bR\ahealthy\x12\x1f\n" +
 	"\vcache_error\x18\x02 \x01(\tR\n" +
 	"cacheError\x12\x19\n" +
-	"\bdb_error\x18\x03 \x01(\tR\adbError2\xd3\x02\n" +
-	"\x0eDBCacheService\x124\n" +
-	"\aGetData\x12\x13.dbcache.GetRequest\x1a\x14.dbcache.GetResponse\x12=\n" +
+	"\bdb_error\x18\x03 \x01(\tR\adbError2\xfc\x02\n" +
+	"\x0eDBCacheService\x12I\n" +
+	"\aGetData\x12\x13.dbcache.GetRequest\x1a\x14.dbcache.GetResponse\"\x13\x82\xd3\xe4\x93\x02\r:\x01*\"\b/v1/data\x12=\n" +
 	"\n" +
 	"InsertData\x12\x16.dbcache.InsertRequest\x1a\x17.dbcache.InsertResponse\x12J\n" +
 	"\x0fInvalidateCache\x12\x1a.dbcache.InvalidateRequest\x1a\x1b.dbcache.InvalidateResponse\x12;\n" +
 	"\n" +
-	"FlushCache\x12\x15.dbcache.FlushRequest\x1a\x16.dbcache.FlushResponse\x12C\n" +
-	"\vCheckHealth\x12\x16.google.protobuf.Empty\x1a\x1c.dbcache.HealthCheckResponseB\x0fZ\r/pkg/protobufb\x06proto3"
+	"FlushCache\x12\x15.dbcache.FlushRequest\x1a\x16.dbcache.FlushResponse\x12W\n" +
+	"\vCheckHealth\x12\x16.google.protobuf.Empty\x1a\x1c.dbcache.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/v1/healthB\x0fZ\r/pkg/protobufb\x06proto3"
 
 var (
 	file_dbcache_proto_rawDescOnce sync.Once

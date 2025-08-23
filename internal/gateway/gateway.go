@@ -1,34 +1,32 @@
 package gateway
 
 import (
-	"log"
+	"context"
 
 	"github.com/gin-gonic/gin"
-	grpcInternal "github.com/travis-james/DBCache/internal/client"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	pb "github.com/travis-james/DBCache/pkg/protobuf"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-type HttpGateway struct {
-	router     *gin.Engine
-	grpcClient grpcInternal.Client
-}
+func RunHTTPGateway() {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-func NewHTTPGateway() (*HttpGateway, error) {
-	gClient, err := grpcInternal.Start()
+	mux := runtime.NewServeMux()
+	err := pb.RegisterDBCacheServiceHandlerFromEndpoint(
+		ctx,
+		mux,
+		"localhost:50051",
+		[]grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+	)
 	if err != nil {
-		return nil, err
-	}
-
-	serv := &HttpGateway{
-		router:     NewRouter(gClient),
-		grpcClient: *gClient,
-	}
-	return serv, nil
-}
-
-func (gw *HttpGateway) StartHTTPServer() {
-	addr := "localhost:8080"
-	log.Printf("starting HTTP server at %v", addr)
-	if err := gw.router.Run(addr); err != nil {
 		panic(err)
 	}
+
+	r := gin.Default()
+	r.Any("/v1/*any", gin.WrapH(mux))
+	r.Run(":8080")
 }

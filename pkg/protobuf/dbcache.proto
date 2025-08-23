@@ -3,6 +3,7 @@ syntax = "proto3";
 package dbcache;
 option go_package = "/pkg/protobuf";
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
 // Message to define a parameterized sql query.
 message FallbackQuery {
@@ -55,7 +56,13 @@ message HealthCheckResponse {
 
 service DBCacheService {
   // GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
-  rpc GetData(GetRequest) returns (GetResponse);
+  // Need to use post so we can send the fallback query as a json body.
+  rpc GetData(GetRequest) returns (GetResponse){
+    option (google.api.http) = {
+      post: "/v1/data"
+      body: "*"
+    };
+  };
   // InsertData: Manually insert data into cache.
   rpc InsertData(InsertRequest) returns (InsertResponse);
   // InvalidateCache: remove key(s) from cache.
@@ -63,5 +70,9 @@ service DBCacheService {
   // FlushCache: remove all entries from cache.
   rpc FlushCache(FlushRequest) returns (FlushResponse);
   // Server returns healthy, pings status of db and cache.
-  rpc CheckHealth(google.protobuf.Empty) returns (HealthCheckResponse);
+  rpc CheckHealth(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/v1/health"
+    };
+  };
 }

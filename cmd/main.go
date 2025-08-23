@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/travis-james/DBCache/internal/client"
-	"github.com/travis-james/DBCache/internal/gateway"
+	gw "github.com/travis-james/DBCache/internal/gateway"
 	grpcServer "github.com/travis-james/DBCache/internal/server"
 )
 
@@ -16,7 +16,7 @@ func main() {
 		client.Start()
 	case "dev":
 		go runGRPCServer()
-		go runHTTPGateway()
+		go gw.RunHTTPGateway()
 		select {}
 	default:
 		runGRPCServer()
@@ -29,12 +29,4 @@ func runGRPCServer() {
 		panic(err)
 	}
 	ss.StartGRPCServer()
-}
-
-func runHTTPGateway() {
-	gw, err := gateway.NewHTTPGateway()
-	if err != nil {
-		panic(err)
-	}
-	gw.StartHTTPServer()
 }
