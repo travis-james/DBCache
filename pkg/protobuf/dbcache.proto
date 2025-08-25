@@ -57,14 +57,19 @@ message HealthCheckResponse {
 service DBCacheService {
   // GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
   // Need to use post so we can send the fallback query as a json body.
-  rpc GetData(GetRequest) returns (GetResponse){
+  rpc GetData(GetRequest) returns (GetResponse) {
     option (google.api.http) = {
       post: "/v1/data"
       body: "*"
     };
   };
   // InsertData: Manually insert data into cache.
-  rpc InsertData(InsertRequest) returns (InsertResponse);
+  rpc InsertData(InsertRequest) returns (InsertResponse) {
+    option (google.api.http) = {
+      post: "/v1/insert"
+      body: "*"
+    };
+  };
   // InvalidateCache: remove key(s) from cache.
   rpc InvalidateCache(InvalidateRequest) returns (InvalidateResponse);
   // FlushCache: remove all entries from cache.

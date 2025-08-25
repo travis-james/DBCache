@@ -41,7 +41,7 @@ curl http://localhost:8080/data/users:1
 curl -X POST http://localhost:8080/v1/data \
   -H "Content-Type: application/json" \
   -d '{
-    "query_id": "users:1",
+    "query_id": "users:9999",
     "skip_cache": false
   }'
 
@@ -56,8 +56,16 @@ curl -X POST http://localhost:8080/v1/data \
     "skip_cache": false
   }'
 
+curl -X POST http://localhost:8080/v1/insert \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query_id": "users:9999",
+    "data": "eyJpZCI6OTk5OSwibmFtZSI6IkxhbWFyIEphY2tzb24iLCJlbWFpbCI6IkxhbWFyQGV4YW1wbGUuY29tIiwiYWdlIjoyOH0="
+  }'
 
 
-need this plugin
+
+
+need this plugin to build protobufs on a new system/machine:
 go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 
