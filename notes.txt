@@ -41,7 +41,7 @@ curl http://localhost:8080/data/users:1
 curl -X POST http://localhost:8080/v1/data \
   -H "Content-Type: application/json" \
   -d '{
-    "query_id": "users:9999",
+    "query_id": "users:4",
     "skip_cache": false
   }'
 
@@ -63,7 +63,17 @@ curl -X POST http://localhost:8080/v1/insert \
     "data": "eyJpZCI6OTk5OSwibmFtZSI6IkxhbWFyIEphY2tzb24iLCJlbWFpbCI6IkxhbWFyQGV4YW1wbGUuY29tIiwiYWdlIjoyOH0="
   }'
 
+curl -X POST http://localhost:8080/v1/invalidate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keys": ["users:9999", "users:1"]
+  }'
 
+curl -X POST http://localhost:8080/v1/flush \
+  -H "Content-Type: application/json" \
+  -d '{
+    "confirm": true
+  }'
 
 
 need this plugin to build protobufs on a new system/machine:

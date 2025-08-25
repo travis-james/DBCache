@@ -71,9 +71,19 @@ service DBCacheService {
     };
   };
   // InvalidateCache: remove key(s) from cache.
-  rpc InvalidateCache(InvalidateRequest) returns (InvalidateResponse);
+  rpc InvalidateCache(InvalidateRequest) returns (InvalidateResponse) {
+    option (google.api.http) = {
+      post: "/v1/invalidate"
+      body: "*"
+    };
+  };
   // FlushCache: remove all entries from cache.
-  rpc FlushCache(FlushRequest) returns (FlushResponse);
+  rpc FlushCache(FlushRequest) returns (FlushResponse) {
+    option (google.api.http) = {
+      post: "/v1/flush"
+      body: "*"
+    };
+  };
   // Server returns healthy, pings status of db and cache.
   rpc CheckHealth(google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {

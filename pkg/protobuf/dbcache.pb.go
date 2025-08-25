@@ -577,15 +577,15 @@ const file_dbcache_proto_rawDesc = "" +
 	"\ahealthy\x18\x01 \x01(\bR\ahealthy\x12\x1f\n" +
 	"\vcache_error\x18\x02 \x01(\tR\n" +
 	"cacheError\x12\x19\n" +
-	"\bdb_error\x18\x03 \x01(\tR\adbError2\x93\x03\n" +
+	"\bdb_error\x18\x03 \x01(\tR\adbError2\xc4\x03\n" +
 	"\x0eDBCacheService\x12I\n" +
 	"\aGetData\x12\x13.dbcache.GetRequest\x1a\x14.dbcache.GetResponse\"\x13\x82\xd3\xe4\x93\x02\r:\x01*\"\b/v1/data\x12T\n" +
 	"\n" +
 	"InsertData\x12\x16.dbcache.InsertRequest\x1a\x17.dbcache.InsertResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
-	"/v1/insert\x12J\n" +
-	"\x0fInvalidateCache\x12\x1a.dbcache.InvalidateRequest\x1a\x1b.dbcache.InvalidateResponse\x12;\n" +
+	"/v1/insert\x12e\n" +
+	"\x0fInvalidateCache\x12\x1a.dbcache.InvalidateRequest\x1a\x1b.dbcache.InvalidateResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/invalidate\x12Q\n" +
 	"\n" +
-	"FlushCache\x12\x15.dbcache.FlushRequest\x1a\x16.dbcache.FlushResponse\x12W\n" +
+	"FlushCache\x12\x15.dbcache.FlushRequest\x1a\x16.dbcache.FlushResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/flush\x12W\n" +
 	"\vCheckHealth\x12\x16.google.protobuf.Empty\x1a\x1c.dbcache.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/v1/healthB\x0fZ\r/pkg/protobufb\x06proto3"
 
