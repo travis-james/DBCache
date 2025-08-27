@@ -1,0 +1,26 @@
+meta {
+  name: health
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/v1/health
+  body: none
+  auth: inherit
+}
+
+tests {
+  expect(res.status).to.equal(200);
+  
+  const body = res.body;
+  
+  expect(body.healthy).to.equal(true);
+  expect(body.cacheError).to.equal('');
+  expect(body.dbError).to.equal('');
+  
+}
+
+settings {
+  encodeUrl: true
+}

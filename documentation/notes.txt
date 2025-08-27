@@ -37,7 +37,6 @@ read the Prometheus docs.
 
 
 curl http://localhost:8080/v1/health
-curl http://localhost:8080/data/users:1
 curl -X POST http://localhost:8080/v1/data \
   -H "Content-Type: application/json" \
   -d '{

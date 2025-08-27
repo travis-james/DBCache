@@ -1,0 +1,35 @@
+meta {
+  name: get data from cache
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{url}}/v1/data
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "query_id": "users:4",
+    "skip_cache": false
+  }
+}
+
+tests {
+  expect(res.status).to.equal(200);
+  
+  const decoded = Buffer.from(res.body.data, 'base64').toString('utf-8');
+  console.log("get data from cache: "+decoded);
+  const parsed = JSON.parse(decoded);
+  
+  expect(parsed.id).to.equal(4);
+  expect(parsed.name).to.equal('Nishiwaki');
+  expect(parsed.email).to.equal('aoaoan@neo.net');
+  expect(parsed.age).to.equal(49);
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,41 @@
+meta {
+  name: cache miss
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{url}}/v1/data
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "query_id": "users:2",
+    "fallback_query": {
+      "query": {{query}},
+      "args": [
+        "2"
+      ]
+    },
+    "skip_cache": false
+  }
+}
+
+tests {
+  expect(res.status).to.equal(200);
+  
+  const decoded = Buffer.from(res.body.data, 'base64').toString('utf-8');
+  console.log("cache miss: "+decoded);
+  const parsed = JSON.parse(decoded);
+  
+  expect(parsed.id).to.equal(2);
+  expect(parsed.name).to.equal('Oomoto');
+  expect(parsed.email).to.equal('nocchi@perfume.com');
+  expect(parsed.age).to.equal(36);
+}
+
+settings {
+  encodeUrl: true
+}
