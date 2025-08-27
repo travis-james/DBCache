@@ -12,6 +12,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
 	"github.com/travis-james/DBCache/internal/datastore/postgres"
@@ -19,8 +21,20 @@ import (
 	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
-var ERR_FAILED_TO_VALIDATE_DATASTORES = "failed to verify health of datastores"
-var ERR_CONFIRM_FLUSH = `"confirm" needs to be set to true to flush cache`
+var (
+	// Error messages.
+	ERR_FAILED_TO_VALIDATE_DATASTORES = "failed to verify health of datastores"
+	ERR_CONFIRM_FLUSH                 = `"confirm" needs to be set to true to flush cache`
+	// Prometheus metrics.
+	cacheMisses = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "dbcache_cache_total_misses",
+		Help: "Total number of cache misses",
+	})
+	cacheHits = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "dbcache_cache_total_hits",
+		Help: "Total number of cache hits",
+	})
+)
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
@@ -61,7 +75,7 @@ func (ss *Server) StartGRPCServer() {
 	}
 	ss.GRPCServer = grpc.NewServer()
 	pb.RegisterDBCacheServiceServer(ss.GRPCServer, ss)
-	log.Printf("server listening at %v", lis.Addr())
+	log.Printf("grpc server listening at %v", lis.Addr())
 	if err := ss.GRPCServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -110,6 +124,7 @@ func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthC
 func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
 	data, ttl, err := ss.Cache.Get(ctx, req.GetQueryId())
 	if err == nil {
+		cacheHits.Inc()
 		return &pb.GetResponse{
 			FromCache:  true,
 			Data:       data,
@@ -118,7 +133,9 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	} else if !errors.Is(err, datastore.ErrCacheMiss) {
 		return nil, status.Error(codes.Internal, fmt.Sprint("error in querying cache: ", err.Error()))
 	}
+
 	// Cache miss.
+	cacheMisses.Inc()
 	args := convertArgs(req.GetFallbackQuery().GetArgs())
 	dataFromDB, err := ss.DB.QueryRows(req.GetFallbackQuery().GetQuery(), args...)
 	if err != nil {

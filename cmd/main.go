@@ -5,6 +5,7 @@ import (
 
 	"github.com/travis-james/DBCache/internal/client"
 	gw "github.com/travis-james/DBCache/internal/gateway"
+	"github.com/travis-james/DBCache/internal/metrics"
 	grpcServer "github.com/travis-james/DBCache/internal/server"
 )
 
@@ -17,6 +18,7 @@ func main() {
 	case "dev":
 		go runGRPCServer()
 		go gw.RunHTTPGateway()
+		go metrics.RunPrometheusServer()
 		select {}
 	default:
 		runGRPCServer()
