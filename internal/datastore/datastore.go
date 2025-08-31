@@ -22,4 +22,5 @@ type Cache interface {
 	Delete(ctx context.Context, keys []string) (int64, error)
 	Close() error
 	Flush(ctx context.Context) int64
+	NumberOfItems(ctx context.Context) (int64, error)
 }

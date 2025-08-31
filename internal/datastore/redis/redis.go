@@ -26,7 +26,14 @@ func NewRedis(cc *config.Config) (RedisAdapter, error) {
 	if err := client.Ping(ctx).Err(); err != nil {
 		return RedisAdapter{}, fmt.Errorf("redis ping failed: %v", err)
 	}
-	return RedisAdapter{Client: client}, nil
+
+	return RedisAdapter{
+		Client: client,
+	}, nil
+}
+
+func (ra RedisAdapter) Close() error {
+	return ra.Client.Close()
 }
 
 func (ra RedisAdapter) Ping(ctx context.Context) (string, error) {
@@ -66,6 +73,6 @@ func (ra *RedisAdapter) Flush(ctx context.Context) int64 {
 	return numberOfKeys
 }
 
-func (ra RedisAdapter) Close() error {
-	return ra.Client.Close()
+func (ra *RedisAdapter) NumberOfItems(ctx context.Context) (int64, error) {
+	return ra.Client.DBSize(ctx).Result()
 }

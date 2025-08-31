@@ -12,12 +12,11 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
 	"github.com/travis-james/DBCache/internal/datastore/postgres"
 	"github.com/travis-james/DBCache/internal/datastore/redis"
+	mm "github.com/travis-james/DBCache/internal/metrics"
 	pb "github.com/travis-james/DBCache/pkg/protobuf"
 )
 
@@ -25,23 +24,15 @@ var (
 	// Error messages.
 	ERR_FAILED_TO_VALIDATE_DATASTORES = "failed to verify health of datastores"
 	ERR_CONFIRM_FLUSH                 = `"confirm" needs to be set to true to flush cache`
-	// Prometheus metrics.
-	cacheMisses = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "dbcache_cache_total_misses",
-		Help: "Total number of cache misses",
-	})
-	cacheHits = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "dbcache_cache_total_hits",
-		Help: "Total number of cache hits",
-	})
 )
 
 type Server struct {
 	pb.UnimplementedDBCacheServiceServer
-	GRPCServer *grpc.Server
-	DB         datastore.DB
-	Cache      datastore.Cache
-	Config     *config.Config
+	GRPCServer     *grpc.Server
+	DB             datastore.DB
+	Cache          datastore.Cache
+	Config         *config.Config
+	metricsManager *mm.MetricsManager
 }
 
 func Init() (*Server, error) {
@@ -61,9 +52,10 @@ func Init() (*Server, error) {
 	}
 
 	return &Server{
-		DB:     &pa,
-		Cache:  &ra,
-		Config: config,
+		DB:             &pa,
+		Cache:          &ra,
+		Config:         config,
+		metricsManager: mm.MetricsManagerInit(&ra),
 	}, nil
 }
 
@@ -81,11 +73,14 @@ func (ss *Server) StartGRPCServer() {
 	}
 }
 
-func (ss *Server) Close() error {
+func (ss *Server) Close() error { // return error?
 	ss.Cache.Close()
 	ss.DB.Close()
 	if ss.GRPCServer != nil {
 		ss.GRPCServer.Stop()
+	}
+	if ss.metricsManager != nil {
+		ss.metricsManager.Close()
 	}
 	return nil
 }
@@ -124,7 +119,7 @@ func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthC
 func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
 	data, ttl, err := ss.Cache.Get(ctx, req.GetQueryId())
 	if err == nil {
-		cacheHits.Inc()
+		ss.metricsManager.CacheHits.Inc()
 		return &pb.GetResponse{
 			FromCache:  true,
 			Data:       data,
@@ -135,7 +130,7 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	}
 
 	// Cache miss.
-	cacheMisses.Inc()
+	ss.metricsManager.CacheMisses.Inc()
 	args := convertArgs(req.GetFallbackQuery().GetArgs())
 	dataFromDB, err := ss.DB.QueryRows(req.GetFallbackQuery().GetQuery(), args...)
 	if err != nil {
