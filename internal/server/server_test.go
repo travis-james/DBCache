@@ -1,5 +1,8 @@
 package server
 
+// Most tests are handled via integration tests.
+// This is more of just a placeholder, not sure if there's
+// reason to add unit tests or not.
 import (
 	"context"
 	"testing"

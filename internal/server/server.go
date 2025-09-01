@@ -26,15 +26,19 @@ var (
 	ERR_CONFIRM_FLUSH                 = `"confirm" needs to be set to true to flush cache`
 )
 
+// Server contains all the components to run the GRPC db cache
+// server.
 type Server struct {
-	pb.UnimplementedDBCacheServiceServer
-	GRPCServer     *grpc.Server
-	DB             datastore.DB
-	Cache          datastore.Cache
-	Config         *config.Config
-	metricsManager *mm.MetricsManager
+	pb.UnimplementedDBCacheServiceServer // Returns unimplemented errors for any rpc call not implemented.
+	GRPCServer                           *grpc.Server
+	DB                                   datastore.DB
+	Cache                                datastore.Cache
+	Config                               *config.Config
+	metricsManager                       *mm.MetricsManager
 }
 
+// Init a grpc db cache server. Currently hardwired for postgres
+// and redis.
 func Init() (*Server, error) {
 	config, err := config.Load()
 	if err != nil {
@@ -59,6 +63,8 @@ func Init() (*Server, error) {
 	}, nil
 }
 
+// StartGRPCServer will start a grpc server with the parameters
+// provided in config.
 func (ss *Server) StartGRPCServer() {
 	log.Printf("cachepw %s, grpc port %s", ss.Config.CachePw, ss.Config.GRPCPort)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", ss.Config.GRPCPort))
@@ -73,7 +79,9 @@ func (ss *Server) StartGRPCServer() {
 	}
 }
 
-func (ss *Server) Close() error { // return error?
+// Close the cache, db, grpc server connections, and
+// metrics polling.
+func (ss *Server) Close() {
 	ss.Cache.Close()
 	ss.DB.Close()
 	if ss.GRPCServer != nil {
@@ -82,7 +90,6 @@ func (ss *Server) Close() error { // return error?
 	if ss.metricsManager != nil {
 		ss.metricsManager.Close()
 	}
-	return nil
 }
 
 func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthCheckResponse, error) {
