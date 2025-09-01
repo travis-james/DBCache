@@ -12,6 +12,8 @@ import (
 	"github.com/travis-james/DBCache/internal/datastore"
 )
 
+// RunPrometheusServer starts prometheus server at port 2112,
+// at /metrics. Currently port is hardwired.
 func RunPrometheusServer() {
 	http.Handle("/metrics", promhttp.Handler())
 
@@ -20,6 +22,9 @@ func RunPrometheusServer() {
 	log.Fatal(http.ListenAndServe(":2112", nil))
 }
 
+// MetricsManager contains the prometheus metrics for cache
+// misses and hits, number of items in cache, and a ticker and
+// cancel func to poll how many items are in the cache.
 type MetricsManager struct {
 	CacheMisses    prometheus.Counter
 	CacheHits      prometheus.Counter
@@ -28,6 +33,9 @@ type MetricsManager struct {
 	cancelFunc     context.CancelFunc
 }
 
+// MetricsManagerInit sets up prometheus metrics for cache
+// hit/miss/number of items. Takes a cache as an input to
+// be polled for the size of the given cache.
 func MetricsManagerInit(cache datastore.Cache) *MetricsManager {
 	ctx, cancel := context.WithCancel(context.Background())
 	m := &MetricsManager{
@@ -46,16 +54,19 @@ func MetricsManagerInit(cache datastore.Cache) *MetricsManager {
 		ticker:     time.NewTicker(30 * time.Second),
 		cancelFunc: cancel,
 	}
-	go m.startGaugeUpdater(ctx, cache)
+	go m.pollCacheSize(ctx, cache)
 	return m
 }
 
+// Close signals the cancel func, and stops the ticker.
 func (m *MetricsManager) Close() {
 	m.cancelFunc()
 	m.ticker.Stop()
 }
 
-func (m *MetricsManager) startGaugeUpdater(ctx context.Context, cache datastore.Cache) {
+// pollCacheSize is an endless loop to check for a signal on the
+// ticker, or a signal from the cancel func with the associated context.
+func (m *MetricsManager) pollCacheSize(ctx context.Context, cache datastore.Cache) {
 	for {
 		select {
 		case <-ctx.Done():
