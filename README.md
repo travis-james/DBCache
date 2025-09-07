@@ -1,10 +1,10 @@
 # DBCache
-A lightweight database query caching service to reduce load and improve response times.
+A lightweight gRPC-based caching service to reduce database load and improve response times.
 
 ## Overview / Motivation
-The idea of a DB cache is to reduce load on the database itself by data being retrieved from the cache rather the database.
+The idea of a DB cache is to reduce database load by serving cached data when available.
 
-The reason I made this was because I wanted to create something using gRPC, and it had been a while since I've done any development work involving databases.
+I built this to explore gRPC in a real-world context as applied to databases.
 
 ## Architecture Diagram
 ![screenshot](docs/architecture.jpg)
@@ -12,12 +12,30 @@ The reason I made this was because I wanted to create something using gRPC, and 
 
 ## Features
 - gRPC API with a REST gateway for local development/testing.
-- Pluggable DB and cache backends. Developers can use any database or cache as long as they have code that satisfy the datastore interfaces.
+- Developers can plug in any database or cache by implementing the provided datastore interfaces.
 - Metrics via Prometheus.
 
 ## Quickstart / Installation
 ### Usage
+Starting this app should be done through the makefile.
+If starting for the first time run:
+```
+make build-dbs
+```
+For local dev, it's most likely easier to use the HTTP gateway that sits on top of the gRPC api gateway. That way one can use the easily use the Bruno collection in this repo.
+```
+make run-dbs
+make run-dev
+```
+### Config
+Most, if not all, environment variables are done via dbcache.env. Credentials are not securely managed in this repo as it is intended for local development at this point.
+### Testing
+Unit test coverage is minimal due to boilerplate, integration tests cover core behavior.
+```
+make tests
+```
+The Bruno collection also has tests that assert on expected values.
 
-- config
-- testing
+## Other
+Please see the github wiki for additional information.
 
