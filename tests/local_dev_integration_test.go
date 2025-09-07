@@ -19,6 +19,9 @@ import (
 	"github.com/travis-james/DBCache/internal/server"
 )
 
+// IntegrationServer is used once across all tests.
+var IntegrationServer *server.Server
+
 func TestMain(m *testing.M) {
 	fmt.Println("🔧 TestMain is running")
 	// Load env vars from file
@@ -27,15 +30,26 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic("Failed to load env file: " + err.Error())
 	}
-	os.Exit(m.Run())
+	// One server for all file's tests.
+	IntegrationServer, err = server.Init()
+	if err != nil {
+		panic("failed to start server for local dev integration: " + err.Error())
+	}
+
+	go func() {
+		if err = IntegrationServer.StartGRPCServer(); err != nil {
+			panic("gRPC server failed: " + err.Error())
+		}
+	}()
+
+	code := m.Run()
+	IntegrationServer.Close()
+	os.Exit(code)
 }
 
 func TestVerifyLocalRedisWorks(t *testing.T) {
 	// Verifies that get and set work for /internal/datastore/redis
-	ss, err := server.Init()
-	require.Nil(t, err)
-
-	ra, ok := ss.Cache.(*redis.RedisAdapter)
+	ra, ok := IntegrationServer.Cache.(*redis.RedisAdapter)
 	require.True(t, ok)
 
 	ctx := context.Background()
@@ -60,10 +74,7 @@ func TestVerifyLocalRedisWorks(t *testing.T) {
 
 func TestVerifyLocalPostGresWorks(t *testing.T) {
 	// Verifies that get and set work for /internal/datastore/redis
-	ss, err := server.Init()
-	require.Nil(t, err)
-
-	pg, ok := ss.DB.(*postgres.PostgresAdapter)
+	pg, ok := IntegrationServer.DB.(*postgres.PostgresAdapter)
 	require.True(t, ok)
 
 	// Query data

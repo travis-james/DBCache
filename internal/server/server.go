@@ -65,18 +65,19 @@ func Init() (*Server, error) {
 
 // StartGRPCServer will start a grpc server with the parameters
 // provided in config.
-func (ss *Server) StartGRPCServer() {
+func (ss *Server) StartGRPCServer() error {
 	log.Printf("cachepw %s, grpc port %s", ss.Config.CachePw, ss.Config.GRPCPort)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", ss.Config.GRPCPort))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return fmt.Errorf("failed to listen: %v", err)
 	}
 	ss.GRPCServer = grpc.NewServer()
 	pb.RegisterDBCacheServiceServer(ss.GRPCServer, ss)
 	log.Printf("grpc server listening at %v", lis.Addr())
 	if err := ss.GRPCServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		return fmt.Errorf("failed to serve: %v", err)
 	}
+	return nil
 }
 
 // Close the cache, db, grpc server connections, and

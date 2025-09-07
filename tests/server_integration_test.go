@@ -19,11 +19,6 @@ import (
 
 func TestHealthCheck(t *testing.T) {
 	// Scenario: Server returns true for healthy when server is running.
-	// server setup
-	ss, err := server.Init()
-	require.Nil(t, err)
-	go ss.StartGRPCServer()
-	defer ss.Close()
 
 	// client setup
 	cc, err := client.Start()
@@ -37,12 +32,6 @@ func TestHealthCheck(t *testing.T) {
 }
 
 func TestGetData(t *testing.T) {
-	// server setup
-	ss, err := server.Init()
-	require.Nil(t, err)
-	go ss.StartGRPCServer()
-	defer ss.Close()
-
 	// client setup
 	cc, err := client.Start()
 	require.Nil(t, err)
@@ -112,12 +101,6 @@ func TestGetData(t *testing.T) {
 }
 
 func TestInsertData(t *testing.T) {
-	// server setup
-	ss, err := server.Init()
-	require.Nil(t, err)
-	go ss.StartGRPCServer()
-	defer ss.Close()
-
 	// client setup
 	cc, err := client.Start()
 	require.Nil(t, err)
@@ -159,12 +142,6 @@ func TestInsertData(t *testing.T) {
 }
 
 func TestInvalidateCache(t *testing.T) {
-	// server setup
-	ss, err := server.Init()
-	require.Nil(t, err)
-	go ss.StartGRPCServer()
-	defer ss.Close()
-
 	// client setup
 	cc, err := client.Start()
 	require.Nil(t, err)
@@ -208,12 +185,6 @@ func TestInvalidateCache(t *testing.T) {
 }
 
 func TestFlushCache(t *testing.T) {
-	// server setup
-	ss, err := server.Init()
-	require.Nil(t, err)
-	go ss.StartGRPCServer()
-	defer ss.Close()
-
 	// client setup
 	cc, err := client.Start()
 	require.Nil(t, err)

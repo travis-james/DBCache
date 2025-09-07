@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/travis-james/DBCache/internal/config"
 	"github.com/travis-james/DBCache/internal/datastore"
 )
 
@@ -17,9 +19,15 @@ import (
 func RunPrometheusServer() {
 	http.Handle("/metrics", promhttp.Handler())
 
-	addr := ":2112"
-	log.Printf("prometheus server listening at %v", addr)
-	log.Fatal(http.ListenAndServe(":2112", nil))
+	config, err := config.Load()
+	if err != nil {
+		panic(err) // TODO: Handle this more gracefully.
+	}
+	log.Printf("prometheus server listening at %s", config.PrometheusServerPort)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", config.PrometheusServerPort), nil)
+	if err != nil {
+		log.Fatalf("RunPrometheusServer error: %v", err)
+	}
 }
 
 // MetricsManager contains the prometheus metrics for cache
