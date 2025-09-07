@@ -20,10 +20,13 @@ body:json {
 }
 
 tests {
-  expect(res.status).to.equal(200);
+  test("200 OK", function () {
+    expect(200).to.equal(res.status);
+  })
   
-  expect(res.body.entriesRemoved).to.equal("2");
-  
+  test("Correct Number of Entries Removed", function () {
+    expect("2").to.equal(res.body.entriesRemoved);
+  })
 }
 
 settings {

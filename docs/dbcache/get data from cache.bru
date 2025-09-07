@@ -18,16 +18,33 @@ body:json {
 }
 
 tests {
-  expect(res.status).to.equal(200);
+  test("200 OK", function () {
+    expect(200).to.equal(res.status);
+  })
+  
+  test("From Cache", function () {
+    expect(true).to.equal(res.body.fromCache);
+  })
   
   const decoded = Buffer.from(res.body.data, 'base64').toString('utf-8');
-  console.log("get data from cache: "+decoded);
+  console.log("get data from cache: " + decoded);
   const parsed = JSON.parse(decoded);
   
-  expect(parsed.id).to.equal(4);
-  expect(parsed.name).to.equal('Nishiwaki');
-  expect(parsed.email).to.equal('aoaoan@neo.net');
-  expect(parsed.age).to.equal(49);
+  test("Expected ID", function () {
+    expect(4).to.equal(parsed.id);
+  })
+  
+  test("Expected Name", function () {
+    expect('Nishiwaki').to.equal(parsed.name);
+  })
+  
+  test("Expected Email", function () {
+    expect('aoaoan@neo.net').to.equal(parsed.email);
+  })
+  
+  test("Expected Age", function () {
+    expect(49).to.equal(parsed.age);
+  })
 }
 
 settings {

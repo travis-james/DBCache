@@ -11,13 +11,25 @@ get {
 }
 
 tests {
-  expect(res.status).to.equal(200);
+  test("200 OK", function () {
+    expect(200).to.equal(res.status);
+  })
   
   const body = res.body;
   
-  expect(body.healthy).to.equal(true);
-  expect(body.cacheError).to.equal('');
-  expect(body.dbError).to.equal('');
+  test("Response is Healthy", function () {
+    expect(true).to.equal(body.healthy);
+    expect('').to.equal(body.cacheError);
+    expect('').to.equal(body.dbError);
+  })
+  
+  test("No Cache Error", function () {
+    expect(body.cacheError).to.equal('');
+  })
+  
+  test("No DB Error", function () {
+    expect(body.dbError).to.equal('');
+  })
   
 }
 

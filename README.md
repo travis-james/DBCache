@@ -16,7 +16,8 @@ The reason I made this was because I wanted to create something using gRPC, and 
 - Metrics via Prometheus.
 
 ## Quickstart / Installation
-- usage example
+### Usage
+
 - config
 - testing
 

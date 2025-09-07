@@ -24,16 +24,33 @@ body:json {
 }
 
 tests {
-  expect(res.status).to.equal(200);
+  test("200 OK", function () {
+    expect(200).to.equal(res.status);
+  })
+  
+  test("NOT from Cache", function () {
+    expect(false).to.equal(res.body.fromCache);
+  })
   
   const decoded = Buffer.from(res.body.data, 'base64').toString('utf-8');
-  console.log("cache miss: "+decoded);
+  console.log("cache miss: " + decoded);
   const parsed = JSON.parse(decoded);
   
-  expect(parsed.id).to.equal(2);
-  expect(parsed.name).to.equal('Oomoto');
-  expect(parsed.email).to.equal('nocchi@perfume.com');
-  expect(parsed.age).to.equal(36);
+  test("Expected ID", function () {
+    expect(2).to.equal(parsed.id);
+  })
+  
+  test("Expected Name", function () {
+    expect('Oomoto').to.equal(parsed.name);
+  })
+  
+  test("Expected Email", function () {
+    expect('nocchi@perfume.com').to.equal(parsed.email);
+  })
+  
+  test("Expected Age", function () {
+    expect(36).to.equal(parsed.age);
+  })
 }
 
 settings {

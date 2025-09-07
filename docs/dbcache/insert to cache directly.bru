@@ -18,10 +18,13 @@ body:json {
 }
 
 tests {
-  expect(res.status).to.equal(200);
+  test("200 OK", function () {
+    expect(200).to.equal(res.status);
+  })
   
-  expect(res.body.success).to.equal(true);
-  
+  test("Resp OK", function () {
+    expect(true).to.equal(res.body.success);
+  })
 }
 
 settings {
