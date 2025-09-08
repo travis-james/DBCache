@@ -12,12 +12,12 @@ I built this to explore gRPC in a real-world context as applied to databases.
 
 ## Features
 - gRPC API with a REST gateway for local development/testing.
-- Developers can plug in any database or cache by implementing the provided datastore interfaces.
+- Developers can plug in any database or cache by implementing the provided [datastore](https://github.com/travis-james/DBCache/blob/main/internal/datastore/datastore.go) interfaces.
 - Metrics via Prometheus.
 
 ## Quickstart / Installation
 ### Usage
-Starting this app should be done through the makefile.
+Starting this app should be done through the [makefile](https://github.com/travis-james/DBCache/blob/main/Makefile).
 If starting for the first time run:
 ```
 make build-dbs
@@ -28,7 +28,7 @@ make run-dbs
 make run-dev
 ```
 ### Config
-Most, if not all, environment variables are done via dbcache.env. Credentials are not securely managed in this repo as it is intended for local development at this point.
+Most, if not all, environment variables are done via [dbcache.env](https://github.com/travis-james/DBCache/blob/main/dbcache.env). Credentials are not securely managed in this repo as it is intended for local development at this point.
 ### Testing
 Unit test coverage is minimal due to boilerplate, integration tests cover core behavior.
 ```
@@ -37,5 +37,5 @@ make tests
 The Bruno collection also has tests that assert on expected values.
 
 ## Other
-Please see the github wiki for additional information.
+Please see the github [wiki](https://github.com/travis-james/DBCache/wiki) for additional information.
 
