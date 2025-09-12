@@ -34,11 +34,11 @@ func RunPrometheusServer() {
 // misses and hits, number of items in cache, and a ticker and
 // cancel func to poll how many items are in the cache.
 type MetricsManager struct {
-	CacheMisses    prometheus.Counter
-	CacheHits      prometheus.Counter
-	CacheItemGauge prometheus.Gauge
-	ticker         *time.Ticker
-	cancelFunc     context.CancelFunc
+	CacheMisses             prometheus.Counter
+	CacheHits               prometheus.Counter
+	NumberOfCacheItemsGauge prometheus.Gauge
+	ticker                  *time.Ticker
+	cancelFunc              context.CancelFunc
 }
 
 // MetricsManagerInit sets up prometheus metrics for cache
@@ -55,7 +55,7 @@ func MetricsManagerInit(cache datastore.Cache) *MetricsManager {
 			Name: "dbcache_cache_total_hits",
 			Help: "Total number of cache hits",
 		}),
-		CacheItemGauge: promauto.NewGauge(prometheus.GaugeOpts{
+		NumberOfCacheItemsGauge: promauto.NewGauge(prometheus.GaugeOpts{
 			Name: "dbcache_cache_items_total",
 			Help: "Current number of items in the cache",
 		}),
@@ -82,7 +82,7 @@ func (m *MetricsManager) pollCacheSize(ctx context.Context, cache datastore.Cach
 		case <-m.ticker.C: // Get number of items every 30 seconds.
 			count, err := cache.NumberOfItems(ctx)
 			if err == nil {
-				m.CacheItemGauge.Set(float64(count))
+				m.NumberOfCacheItemsGauge.Set(float64(count))
 			}
 		}
 	}

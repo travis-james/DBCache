@@ -12,6 +12,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// RunHTTPGateway sets up an HTTP gateway over the GRPC server
+// using gin and grpc-gateway.
 func RunHTTPGateway() {
 	config, err := config.Load()
 	if err != nil {

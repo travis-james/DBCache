@@ -10,10 +10,14 @@ import (
 	"github.com/travis-james/DBCache/internal/datastore"
 )
 
+// RedisAdapter contains a Redis Client and implements the Cache
+// interface in datastore.
 type RedisAdapter struct {
 	Client *redis.Client
 }
 
+// NewRedis returns a Redic Client connection based on the input
+// config.
 func NewRedis(cc *config.Config) (RedisAdapter, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cc.CacheAddr,
@@ -32,14 +36,17 @@ func NewRedis(cc *config.Config) (RedisAdapter, error) {
 	}, nil
 }
 
+// Close the Redis connection.
 func (ra RedisAdapter) Close() error {
 	return ra.Client.Close()
 }
 
+// Ping the Redis cache.
 func (ra RedisAdapter) Ping(ctx context.Context) (string, error) {
 	return ra.Client.Ping(ctx).Result()
 }
 
+// Get the associated data in cache based on the input key.
 func (ra *RedisAdapter) Get(ctx context.Context, key string) ([]byte, int64, error) {
 	data, err := ra.Client.Get(ctx, key).Bytes()
 	if err == redis.Nil {
@@ -54,14 +61,19 @@ func (ra *RedisAdapter) Get(ctx context.Context, key string) ([]byte, int64, err
 	return data, int64(time.Seconds()), nil
 }
 
+// Set the cache with the given key : value.
 func (ra *RedisAdapter) Set(ctx context.Context, key string, value []byte, ttl time.Duration) error {
 	return ra.Client.Set(ctx, key, value, ttl).Err()
 }
 
+// Delete an entry/entries from cache. Returns the number of keys
+// deleted.
 func (ra *RedisAdapter) Delete(ctx context.Context, keys []string) (int64, error) {
 	return ra.Client.Del(ctx, keys...).Result()
 }
 
+// Flush remove all entries from cache and returns the number
+// of items removed.
 func (ra *RedisAdapter) Flush(ctx context.Context) int64 {
 	numberOfKeys := ra.Client.DBSize(ctx).Val()
 	ra.Client.FlushDB(ctx)
@@ -73,6 +85,7 @@ func (ra *RedisAdapter) Flush(ctx context.Context) int64 {
 	return numberOfKeys
 }
 
+// NumberOfItems returns the number of items in a given cache.
 func (ra *RedisAdapter) NumberOfItems(ctx context.Context) (int64, error) {
 	return ra.Client.DBSize(ctx).Result()
 }

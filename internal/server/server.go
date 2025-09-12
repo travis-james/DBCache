@@ -80,6 +80,16 @@ func (ss *Server) StartGRPCServer() error {
 	return nil
 }
 
+// RunGRPCServer is a convenience function to wrap Init and
+// StartGRPCServer.
+func RunGRPCServer() {
+	ss, err := Init()
+	if err != nil {
+		panic(err)
+	}
+	ss.StartGRPCServer()
+}
+
 // Close the cache, db, grpc server connections, and
 // metrics polling.
 func (ss *Server) Close() {
@@ -93,6 +103,7 @@ func (ss *Server) Close() {
 	}
 }
 
+// CheckHealth pings the DB and Cache.
 func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthCheckResponse, error) {
 	log.Print("Ping'ing cache...")
 	cacheResult, cacheErr := ss.Cache.Ping(ctx)
@@ -123,7 +134,8 @@ func (ss Server) CheckHealth(ctx context.Context, _ *emptypb.Empty) (*pb.HealthC
 	}, nil
 }
 
-// GetData: Retrieve data from cache if available. Else run fallback query and cache the result.
+// GetData retrieves data from cache if available.
+// Else run fallback query and cache the result.
 func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetResponse, error) {
 	data, ttl, err := ss.Cache.Get(ctx, req.GetQueryId())
 	if err == nil {
@@ -157,6 +169,10 @@ func (ss Server) GetData(ctx context.Context, req *pb.GetRequest) (*pb.GetRespon
 	}, err
 }
 
+// convertArgs is a helper function. Protobuf Fallbackquery is a slice
+// of strings, but the QueryRows function expects a slice of any.
+// Maybe check if protobuf allows defining an array/slice of
+// any.
 func convertArgs(args []string) []any {
 	result := make([]any, len(args))
 	for i, arg := range args {
@@ -165,6 +181,8 @@ func convertArgs(args []string) []any {
 	return result
 }
 
+// InsertData will insert the request data directly into the cache.
+// !!! This call does not write to the database, cache only !!!
 func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.InsertResponse, error) {
 	err := ss.Cache.Set(ctx, req.GetQueryId(), req.GetData(), 0)
 	if err != nil {
@@ -173,6 +191,8 @@ func (ss Server) InsertData(ctx context.Context, req *pb.InsertRequest) (*pb.Ins
 	return &pb.InsertResponse{Success: true}, nil
 }
 
+// InvalidateCache removes the given key:val pair in the request from
+// cache.
 func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest) (*pb.InvalidateResponse, error) {
 	numberOfKeys, err := ss.Cache.Delete(ctx, req.Keys)
 	if err != nil {
@@ -183,6 +203,7 @@ func (ss Server) InvalidateCache(ctx context.Context, req *pb.InvalidateRequest)
 	}, nil
 }
 
+// FlushCache removes all entries from cache.
 func (ss Server) FlushCache(ctx context.Context, req *pb.FlushRequest) (*pb.FlushResponse, error) {
 	if !req.GetConfirm() {
 		return nil, errors.New(ERR_CONFIRM_FLUSH)

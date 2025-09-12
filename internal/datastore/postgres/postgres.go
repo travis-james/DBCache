@@ -10,10 +10,14 @@ import (
 	"github.com/travis-james/DBCache/internal/config"
 )
 
+// PostgresAdapter is a SQL DB connection implementing the
+// DB interface in datastore.
 type PostgresAdapter struct {
 	DB *sql.DB
 }
 
+// NewPostgres creates a new Postgres connection based on the
+// provided config.
 func NewPostgres(cc *config.Config) (PostgresAdapter, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -39,7 +43,8 @@ func (pa PostgresAdapter) Ping() error {
 	return pa.DB.Ping()
 }
 
-// QueryRows is set up to take whatever query, and assuming success, return the result as a []byte.
+// QueryRows is set up to take whatever query, and assuming
+// success, return the result as a []byte.
 func (pa *PostgresAdapter) QueryRows(query string, args ...any) ([]byte, error) {
 	// Use sql.Rows to get column names
 	rows, err := pa.DB.Query(query, args...)
@@ -84,6 +89,7 @@ func (pa *PostgresAdapter) QueryRows(query string, args ...any) ([]byte, error) 
 	return json.Marshal(result)
 }
 
+// Close the DB connection.
 func (pa *PostgresAdapter) Close() error {
 	return pa.DB.Close()
 }

@@ -16,19 +16,11 @@ func main() {
 	case "client":
 		client.Start()
 	case "dev":
-		go runGRPCServer()
+		go grpcServer.RunGRPCServer()
 		go gw.RunHTTPGateway()
 		go metrics.RunPrometheusServer()
 		select {}
 	default:
-		runGRPCServer()
+		grpcServer.RunGRPCServer()
 	}
-}
-
-func runGRPCServer() {
-	ss, err := grpcServer.Init()
-	if err != nil {
-		panic(err)
-	}
-	ss.StartGRPCServer()
 }

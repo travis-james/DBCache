@@ -6,6 +6,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+// Client creates grpc client to make calls on the
+// DBCache service.
 type Client struct {
 	pb.DBCacheServiceClient
 	*grpc.ClientConn

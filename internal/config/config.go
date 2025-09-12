@@ -2,6 +2,9 @@ package config
 
 import "os"
 
+// Config is currently how I'm passing credentials/secrets
+// around the application. It is not secure, and needs to
+// be iterated on for production use.
 type Config struct {
 	DatastoreDBHost      string
 	DatastoreDBPort      string

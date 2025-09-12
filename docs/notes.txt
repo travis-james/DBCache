@@ -1,3 +1,6 @@
+These are just notes/things I was jotting down when making this
+for reference or if I ever need to do some of these things again.
+
 === Creating redis data
 docker run --name my-redis -d -p 6379:6379 redis:8
 docker run --rm --network container:my-redis redis redis-cli -h localhost SET users:4 '{"id":4, "name":"Nishiwaki", "email":"aoaoan@neo.net", "age":49}'
