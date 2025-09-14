@@ -21,6 +21,8 @@ func main() {
 		go metrics.RunPrometheusServer()
 		select {}
 	default:
-		grpcServer.RunGRPCServer()
+		go grpcServer.RunGRPCServer()
+		go metrics.RunPrometheusServer()
+		select {}
 	}
 }
